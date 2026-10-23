@@ -1,119 +1,1344 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AI Universe</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f7fb;
-      color: #20283a;
-    }
-    header {
-      padding: 24px 16px;
-      background: white;
-      border-bottom: 1px solid #e5e9f2;
-    }
-    h1 { margin: 0 0 8px; color: #5145cd; }
-    p { color: #667085; }
-    main { max-width: 900px; margin: auto; padding: 18px; }
-    input {
-      width: 100%;
-      padding: 15px;
-      border: 1px solid #d8deea;
-      border-radius: 12px;
-      font-size: 16px;
-      background: white;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
-      gap: 12px;
-      margin-top: 18px;
-    }
-    .tool {
-      display: block;
-      padding: 18px 14px;
-      background: white;
-      border: 1px solid #e5e9f2;
-      border-radius: 14px;
-      text-decoration: none;
-      color: #20283a;
-    }
-    .tool:active { background: #edf0ff; }
-    .emoji { font-size: 28px; }
-    .tool h2 { font-size: 17px; margin: 12px 0 6px; }
-    .tool p { font-size: 13px; margin: 0; }
-    footer { text-align: center; padding: 25px; font-size: 13px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ffffff">
+<title>AI Universe — Your AI Workspace</title>
+
+<style>
+:root {
+  --primary: #635bff;
+  --background: #ffffff;
+  --sidebar: #f8f9fc;
+  --text: #202123;
+  --muted: #737780;
+  --border: #e5e7eb;
+  --hover: #eef0f5;
+  --success: #16803d;
+  --danger: #dc2626;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  background: var(--background);
+  color: var(--text);
+}
+
+button, input, textarea, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.app {
+  display: flex;
+  min-height: 100dvh;
+}
+
+/* Sidebar */
+
+.sidebar {
+  width: 270px;
+  height: 100dvh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 12px;
+  background: var(--sidebar);
+  border-right: 1px solid var(--border);
+  transition: transform 0.25s ease;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  margin-bottom: 18px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.brand-icon {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: white;
+  background: linear-gradient(135deg, #635bff, #a855f7);
+}
+
+.new-chat,
+.nav-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 5px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  font-size: 14px;
+}
+
+.new-chat {
+  background: white;
+  border: 1px solid var(--border);
+  font-weight: 650;
+}
+
+.new-chat:hover,
+.nav-button:hover,
+.nav-button.active {
+  background: var(--hover);
+}
+
+.section-label {
+  padding: 18px 10px 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.history-list {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 80px;
+}
+
+.history-item {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  padding: 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  text-align: left;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.history-item:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.account-area {
+  padding: 12px 8px 4px;
+  border-top: 1px solid var(--border);
+}
+
+.account-email {
+  margin: 8px 0;
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+/* Main workspace */
+
+.main {
+  width: calc(100% - 270px);
+  min-height: 100dvh;
+  margin-left: 270px;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 22px;
+  border-bottom: 1px solid var(--border);
+  background: white;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.topbar-title {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.small-button {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: white;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.primary-button {
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--primary);
+  color: white;
+  font-weight: 650;
+}
+
+.content {
+  width: 100%;
+  max-width: 1050px;
+  margin: 0 auto;
+  padding: 26px 24px 40px;
+}
+
+.view {
+  display: none;
+}
+
+.view.active {
+  display: block;
+}
+
+h1, h2, h3, p {
+  overflow-wrap: anywhere;
+}
+
+.page-heading {
+  margin: 0 0 8px;
+  font-size: clamp(24px, 4vw, 34px);
+  letter-spacing: -1px;
+}
+
+.muted {
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.feature-card {
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  background: white;
+  text-align: left;
+}
+
+.feature-card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 5px 20px #2021230b;
+}
+
+.feature-icon {
+  font-size: 25px;
+}
+
+.feature-card h3 {
+  margin: 12px 0 6px;
+  font-size: 15px;
+}
+
+.feature-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.panel {
+  padding: 20px;
+  margin-top: 18px;
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  background: white;
+}
+
+.field {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  outline: none;
+  background: white;
+  color: var(--text);
+}
+
+.field:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px #635bff18;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.status {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .sidebar {
+    transform: translateX(-100%);
+    box-shadow: none;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: 0 0 0 100vmax #0005;
+  }
+
+  .main {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .content {
+    padding: 20px 15px 30px;
+  }
+
+  .topbar {
+    padding: 12px 14px;
+  }
+
+  .card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .feature-card {
+    padding: 14px;
+  }
+
+  .topbar-title {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 360px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
 </head>
 <body>
-  <header>
-    <h1>🌌 AI Universe</h1>
-    <p>Your personal all-in-one AI dashboard</p>
-  </header>
 
-  <main>
-    <input id="search" type="search"
-      placeholder="Search AI tools..."
-      aria-label="Search AI tools">
+<div class="app">
 
-    <div class="grid" id="tools">
-      <a class="tool" href="https://chatgpt.com/" target="_blank" rel="noopener">
-        <span class="emoji">💬</span><h2>ChatGPT</h2><p>AI assistant</p>
-      </a>
-      <a class="tool" href="https://gemini.google.com/" target="_blank" rel="noopener">
-        <span class="emoji">✨</span><h2>Gemini</h2><p>Google AI</p>
-      </a>
-      <a class="tool" href="https://claude.ai/" target="_blank" rel="noopener">
-        <span class="emoji">🧠</span><h2>Claude</h2><p>Writing and reasoning</p>
-      </a>
-      <a class="tool" href="https://chat.deepseek.com/" target="_blank" rel="noopener">
-        <span class="emoji">🔎</span><h2>DeepSeek</h2><p>AI chat and coding</p>
-      </a>
-      <a class="tool" href="https://www.perplexity.ai/" target="_blank" rel="noopener">
-        <span class="emoji">🌐</span><h2>Perplexity</h2><p>AI-powered search</p>
-      </a>
-      <a class="tool" href="https://www.meta.ai/" target="_blank" rel="noopener">
-        <span class="emoji">♾️</span><h2>Meta AI</h2><p>AI assistant</p>
-      </a>
-      <a class="tool" href="https://labs.google/fx/tools/flow" target="_blank" rel="noopener">
-        <span class="emoji">🎬</span><h2>Google Flow</h2><p>AI video creation</p>
-      </a>
-      <a class="tool" href="https://www.youtube.com/" target="_blank" rel="noopener">
-        <span class="emoji">▶️</span><h2>YouTube</h2><p>Videos and learning</p>
-      </a>
-      <a class="tool" href="https://copilot.microsoft.com/" target="_blank" rel="noopener">
-        <span class="emoji">🤖</span><h2>Copilot</h2><p>Microsoft AI</p>
-      </a>
-      <a class="tool" href="https://notebooklm.google.com/" target="_blank" rel="noopener">
-        <span class="emoji">📚</span><h2>NotebookLM</h2><p>Research and study</p>
-      </a>
-      <a class="tool" href="https://aistudio.google.com/" target="_blank" rel="noopener">
-        <span class="emoji">🛠️</span><h2>Google AI Studio</h2><p>Build with AI</p>
-      </a>
-      <a class="tool" href="https://huggingface.co/" target="_blank" rel="noopener">
-        <span class="emoji">🤗</span><h2>Hugging Face</h2><p>Explore AI models</p>
-      </a>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="brand-icon">✦</span>
+      <span>AI Universe</span>
     </div>
-  </main>
 
-  <footer>AI Universe · Your personal AI hub</footer>
+    <button class="new-chat" onclick="newChat()">
+      ＋ New Chat
+    </button>
 
-  <script>
-    const search = document.getElementById("search");
-    const cards = document.querySelectorAll(".tool");
+    <button class="nav-button active"
+      onclick="showView('chat', this)">
+      💬 AI Assistant
+    </button>
 
-    search.addEventListener("input", () => {
-      const query = search.value.toLowerCase().trim();
-      cards.forEach(card => {
-        card.style.display =
-          card.innerText.toLowerCase().includes(query) ? "" : "none";
-      });
+    <button class="nav-button"
+      onclick="showView('tools', this)">
+      ✨ AI Tools Hub
+    </button>
+
+    <button class="nav-button"
+      onclick="showView('files', this)">
+      📎 File Analysis
+    </button>
+
+    <button class="nav-button"
+      onclick="showView('video', this)">
+      🎬 YouTube Studio
+    </button>
+
+    <button class="nav-button"
+      onclick="showView('utilities', this)">
+      🌐 Utilities
+    </button>
+
+    <div class="section-label">Recent Chats</div>
+
+    <div class="history-list" id="history">
+      <div class="muted" style="padding:10px">
+        Your chats will appear here.
+      </div>
+    </div>
+
+    <div class="account-area">
+      <button class="nav-button" onclick="signIn()">
+        🔐 Sign in with Google
+      </button>
+
+      <div class="account-email" id="accountEmail">
+        Not signed in
+      </div>
+
+      <button class="small-button" onclick="signOutUser()">
+        Sign out
+      </button>
+    </div>
+  </aside>
+
+  <section class="main">
+
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="small-button"
+          onclick="toggleSidebar()" aria-label="Open menu">
+          ☰
+        </button>
+        <div class="topbar-title" id="pageTitle">
+          AI Assistant
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <span id="loginStatus" class="muted">Guest mode</span>
+      </div>
+    </header>
+
+    <main class="content">
+
+<!-- CHAT VIEW -->
+<section class="view active" id="chatView">
+  <div class="welcome" id="welcome">
+    <div style="font-size:42px">🌌</div>
+    <h1>Welcome to AI Universe</h1>
+    <p>Ask questions, learn, create and explore.</p>
+  </div>
+
+  <div id="messages" class="messages" aria-live="polite"></div>
+
+  <div class="composer">
+    <label class="upload-button" for="fileUpload" title="Upload file">📎</label>
+    <input id="fileUpload" type="file" hidden
+      accept="image/*,.pdf,.txt,.csv,.doc,.docx,.md">
+
+    <textarea id="prompt" rows="1"
+      placeholder="Message AI Universe..."
+      aria-label="Write your message"></textarea>
+
+    <button id="sendButton" class="send-button"
+      type="button" onclick="sendMessage()">↑</button>
+  </div>
+
+  <p class="composer-note">
+    AI can make mistakes. Verify important information.
+  </p>
+  <div id="fileStatus" class="muted"></div>
+</section>
+
+<!-- AI TOOLS VIEW -->
+<section class="view" id="toolsView">
+  <h2>AI Tools Hub</h2>
+  <p class="muted">Explore AI services and creative tools.</p>
+
+  <div class="tool-grid">
+    <a class="tool-card" href="https://chatgpt.com/"
+       target="_blank" rel="noopener">
+      <span>💬</span><h3>ChatGPT</h3>
+      <p>AI assistant</p>
+    </a>
+
+    <a class="tool-card" href="https://gemini.google.com/"
+       target="_blank" rel="noopener">
+      <span>✨</span><h3>Google Gemini</h3>
+      <p>Google AI assistant</p>
+    </a>
+
+    <a class="tool-card" href="https://claude.ai/"
+       target="_blank" rel="noopener">
+      <span>🧠</span><h3>Claude</h3>
+      <p>Writing and reasoning</p>
+    </a>
+
+    <a class="tool-card" href="https://www.perplexity.ai/"
+       target="_blank" rel="noopener">
+      <span>🔎</span><h3>Perplexity</h3>
+      <p>AI-powered search</p>
+    </a>
+
+    <a class="tool-card" href="https://aistudio.google.com/"
+       target="_blank" rel="noopener">
+      <span>🛠️</span><h3>Google AI Studio</h3>
+      <p>Build with AI</p>
+    </a>
+
+    <a class="tool-card" href="https://notebooklm.google.com/"
+       target="_blank" rel="noopener">
+      <span>📚</span><h3>NotebookLM</h3>
+      <p>Research and learning</p>
+    </a>
+
+    <a class="tool-card" href="https://huggingface.co/"
+       target="_blank" rel="noopener">
+      <span>🤗</span><h3>Hugging Face</h3>
+      <p>Explore AI models</p>
+    </a>
+
+    <a class="tool-card" href="https://labs.google/fx/tools/flow"
+       target="_blank" rel="noopener">
+      <span>🎬</span><h3>Google Flow</h3>
+      <p>AI video creation</p>
+    </a>
+  </div>
+</section>
+
+<!-- VIDEO PLANNER VIEW -->
+<section class="view" id="videoView">
+  <h2>Video Creator Studio</h2>
+  <p class="muted">
+    Plan YouTube videos, chapters, narration and scene prompts.
+  </p>
+
+  <div class="panel">
+    <label for="videoTopic">Video topic</label>
+    <input id="videoTopic" type="text"
+      placeholder="e.g. History of the Universe">
+
+    <label for="videoDuration">Video duration</label>
+    <select id="videoDuration">
+      <option value="30">30 minutes</option>
+      <option value="45">45 minutes</option>
+      <option value="60">60 minutes</option>
+    </select>
+
+    <label for="videoLanguage">Language</label>
+    <select id="videoLanguage">
+      <option value="Hindi">Hindi</option>
+      <option value="Hinglish">Hinglish</option>
+      <option value="English">English</option>
+      <option value="Urdu">Urdu</option>
+    </select>
+
+    <label for="videoStyle">Video style</label>
+    <select id="videoStyle">
+      <option value="Educational documentary">
+        Educational documentary
+      </option>
+      <option value="Faceless YouTube">Faceless YouTube</option>
+      <option value="Storytelling">Storytelling</option>
+      <option value="Explainer">Explainer</option>
+      <option value="Motivational">Motivational</option>
+    </select>
+
+    <button class="primary-button" type="button"
+      onclick="generateVideoPlan()">
+      Generate Video Plan
+    </button>
+
+    <div id="videoOutput" class="output"></div>
+  </div>
+</section>
+
+<!-- PUBLIC UTILITIES VIEW -->
+<section class="view" id="utilitiesView">
+  <h2>Useful Utilities</h2>
+  <p class="muted">Quick tools for everyday use.</p>
+
+  <div class="tool-grid">
+    <a class="tool-card" href="https://open-meteo.com/"
+       target="_blank" rel="noopener">
+      <span>🌤️</span><h3>Weather</h3>
+      <p>Explore free weather data.</p>
+    </a>
+
+    <a class="tool-card" href="https://restcountries.com/"
+       target="_blank" rel="noopener">
+      <span>🌍</span><h3>Country Data</h3>
+      <p>Country names and information.</p>
+    </a>
+
+    <button class="tool-card" type="button"
+      onclick="loadJoke()">
+      <span>😄</span><h3>Developer Joke</h3>
+      <p>Get a random programming joke.</p>
+    </button>
+
+    <button class="tool-card" type="button"
+      onclick="loadIP()">
+      <span>🌐</span><h3>Public IP</h3>
+      <p>Check your public IP address.</p>
+    </button>
+  </div>
+
+  <div class="panel">
+    <h3>Utility result</h3>
+    <p id="utilityOutput" aria-live="polite">
+      Select a utility to see its result.
+    </p>
+  </div>
+</section>
+
+<!-- CHAT HISTORY VIEW -->
+<section class="view" id="historyView">
+  <h2>Chat History</h2>
+  <p class="muted">
+    Your saved conversations appear here.
+  </p>
+  <div id="historyPage" class="history-list"></div>
+</section>
+
+<!-- SETTINGS VIEW -->
+<section class="view" id="settingsView">
+  <h2>Settings</h2>
+
+  <div class="panel">
+    <h3>Account and synchronization</h3>
+    <p class="muted">
+      Sign in with Google to associate your chats with your account.
+    </p>
+    <button class="primary-button" id="googleLoginButton"
+      type="button" onclick="signInWithGoogle()">
+      Continue with Google
+    </button>
+    <button class="secondary-button" type="button"
+      onclick="signOutUser()">
+      Sign out
+    </button>
+    <p id="accountStatus" aria-live="polite"></p>
+  </div>
+
+  <div class="panel">
+    <h3>Chat data</h3>
+    <p class="muted">
+      Export a backup before clearing conversations.
+    </p>
+    <button class="secondary-button" type="button"
+      onclick="exportChats()">
+      Download chat backup
+    </button>
+    <button class="danger-button" type="button"
+      onclick="clearChats()">
+      Delete my chats
+    </button>
+  </div>
+
+  <div class="panel">
+    <h3>AI model</h3>
+    <label for="modelSelect">Available model</label>
+    <select id="modelSelect">
+      <option value="gemini">Gemini API</option>
+    </select>
+    <p class="muted">
+      The server determines which Gemini model is available.
+    </p>
+  </div>
+</section>
+</main>
+</section>
+</div>
+
+<script type="module">
+import { initializeApp } from
+  "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+  deleteDoc,
+  query,
+  orderBy,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+/*
+  IMPORTANT:
+  Firebase Console > Project settings > General > Your apps
+  se apna actual web configuration yahan paste karna.
+*/
+const firebaseConfig = {
+  apiKey: "PASTE_FIREBASE_WEB_API_KEY",
+  authDomain: "PASTE_PROJECT_ID.firebaseapp.com",
+  projectId: "PASTE_PROJECT_ID",
+  appId: "PASTE_FIREBASE_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const googleProvider = new GoogleAuthProvider();
+
+let currentUser = null;
+let chats = [];
+let activeChatId = null;
+let selectedFile = null;
+let isSending = false;
+
+const $ = id => document.getElementById(id);
+
+function makeId() {
+  return crypto.randomUUID();
+}
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
+function saveLocal() {
+  try {
+    localStorage.setItem(
+      "ai_universe_backup",
+      JSON.stringify(chats)
+    );
+  } catch (error) {
+    console.error("Local backup failed", error);
+  }
+}
+
+function loadLocal() {
+  try {
+    const saved = JSON.parse(
+      localStorage.getItem("ai_universe_backup") || "[]"
+    );
+    return Array.isArray(saved) ? saved : [];
+  } catch {
+    return [];
+  }
+}
+
+function showStatus(message) {
+  if ($("accountStatus")) {
+    $("accountStatus").textContent = message;
+  }
+}
+
+function renderMessages() {
+  const box = $("messages");
+  if (!box) return;
+
+  box.replaceChildren();
+
+  const chat = chats.find(item => item.id === activeChatId);
+  const messages = chat?.messages || [];
+
+  if ($("welcome")) {
+    $("welcome").hidden = messages.length > 0;
+  }
+
+  messages.forEach(message => {
+    const row = document.createElement("div");
+    row.className = "message " +
+      (message.role === "user" ? "user-message" : "ai-message");
+
+    const bubble = document.createElement("div");
+    bubble.className = "message-bubble";
+    bubble.textContent = message.text || "";
+
+    row.appendChild(bubble);
+    box.appendChild(row);
+  });
+
+  box.scrollTop = box.scrollHeight;
+}
+
+function renderHistory() {
+  const box = $("history");
+  const page = $("historyPage");
+
+  [box, page].filter(Boolean).forEach(element => {
+    element.replaceChildren();
+
+    if (!currentUser) {
+      element.textContent = "Sign in to sync your chats.";
+      return;
+    }
+
+    if (!chats.length) {
+      element.textContent = "No saved chats yet.";
+      return;
+    }
+
+    chats.forEach(chat => {
+      const button = document.createElement("button");
+      button.className = "history-item";
+      button.textContent =
+        chat.title || chat.messages?.[0]?.text || "New chat";
+
+      button.onclick = () => {
+        activeChatId = chat.id;
+        renderMessages();
+        switchView("chatView");
+      };
+
+      element.appendChild(button);
     });
+  });
+}
+
+async function persistChat(chat) {
+  saveLocal();
+
+  if (!currentUser) return;
+
+  try {
+    await setDoc(
+      doc(db, "users", currentUser.uid, "chats", chat.id),
+      {
+        title: chat.title || "New chat",
+        messages: chat.messages,
+        updatedAt: serverTimestamp()
+      }
+    );
+  } catch (error) {
+    console.error("Cloud save failed", error);
+    showStatus(
+      "Cloud save failed. Your local backup may still be available."
+    );
+  }
+}
+
+async function loadCloudChats(user) {
+  try {
+    const ref = collection(db, "users", user.uid, "chats");
+    const snapshot = await getDocs(
+      query(ref, orderBy("updatedAt", "desc"))
+    );
+
+    const cloudChats = snapshot.docs.map(item => ({
+      id: item.id,
+      ...item.data()
+    }));
+
+    const local = loadLocal();
+
+    // Merge by chat ID without overwriting existing cloud chats.
+    const merged = new Map();
+
+    [...cloudChats, ...local].forEach(chat => {
+      if (chat && chat.id && Array.isArray(chat.messages)) {
+        if (!merged.has(chat.id)) merged.set(chat.id, chat);
+      }
+    });
+
+    chats = [...merged.values()];
+    saveLocal();
+
+    if (!activeChatId && chats.length) {
+      activeChatId = chats[0].id;
+    }
+
+    renderMessages();
+    renderHistory();
+    showStatus("Signed in. Chats loaded.");
+  } catch (error) {
+    console.error("Cloud history load failed", error);
+    chats = loadLocal();
+    renderMessages();
+    renderHistory();
+    showStatus("Could not load cloud history. Check Firestore rules.");
+  }
+}
+
+async function signInWithGoogle() {
+  try {
+    await signInWithPopup(auth, googleProvider);
+  } catch (error) {
+    if (
+      error.code === "auth/popup-blocked" ||
+      error.code === "auth/operation-not-supported-in-this-environment"
+    ) {
+      await signInWithRedirect(auth, googleProvider);
+      return;
+    }
+
+    console.error(error);
+    showStatus("Google sign-in failed: " + error.message);
+  }
+}
+
+async function signOutUser() {
+  try {
+    await signOut(auth);
+    currentUser = null;
+    showStatus("Signed out. Local backup remains on this device.");
+    renderHistory();
+  } catch (error) {
+    showStatus("Sign-out failed: " + error.message);
+  }
+}
+
+onAuthStateChanged(auth, async user => {
+  currentUser = user || null;
+
+  if (user) {
+    showStatus("Signed in as " + (user.email || "Google user"));
+    await loadCloudChats(user);
+  } else {
+    chats = loadLocal();
+    if (!activeChatId && chats.length) {
+      activeChatId = chats[0].id;
+    }
+    renderMessages();
+    renderHistory();
+  }
+
+  const status = $("loginStatus");
+  if (status) {
+    status.textContent = user ? user.email : "Guest mode";
+  }
+});
+
+getRedirectResult(auth).catch(error => {
+  console.error("Redirect sign-in failed", error);
+});
+
+window.signInWithGoogle = signInWithGoogle;
+window.signOutUser = signOutUser;
+window.renderHistory = renderHistory;
+window.renderMessages = renderMessages;
+window.persistChat = persistChat;
+window.makeId = makeId;
+window.escapeHTML = escapeHTML;
+window.showStatus = showStatus;
+window.getCurrentUser = () => currentUser;
+window.getChats = () => chats;
+window.setActiveChatId = id => { activeChatId = id; };
+window.getActiveChatId = () => activeChatId;
+window.getSelectedFile = () => selectedFile;
+window.setSelectedFile = file => { selectedFile = file; };
+window.getIsSending = () => isSending;
+window.setIsSending = value => { isSending = value; };
+window.getFirestore = () => db;
+window.getFirebaseAuth = () => auth;
   </script>
+  
+<script>
+/* PART 4: AI CHAT, FILES, HISTORY AND UTILITIES */
+
+function switchView(viewId) {
+  document.querySelectorAll(".view").forEach(view => {
+    view.classList.toggle("active", view.id === viewId);
+  });
+
+  const titles = {
+    chatView: "AI Assistant",
+    toolsView: "AI Tools Hub",
+    videoView: "Video Creator Studio",
+    utilitiesView: "Public Utilities",
+    historyView: "Chat History",
+    settingsView: "Settings"
+  };
+
+  const title = document.getElementById("pageTitle");
+  if (title) title.textContent = titles[viewId] || "AI Universe";
+
+  document.getElementById("sidebar")?.classList.remove("open");
+}
+
+function toggleSidebar() {
+  document.getElementById("sidebar")?.classList.toggle("open");
+}
+
+function newChat() {
+  const id = makeId();
+  const chat = {
+    id,
+    title: "New chat",
+    messages: [],
+    createdAt: new Date().toISOString()
+  };
+
+  getChats().unshift(chat);
+  setActiveChatId(id);
+  localStorage.setItem("ai_universe_backup", JSON.stringify(getChats()));
+  renderMessages();
+  renderHistory();
+  switchView("chatView");
+}
+
+async function sendMessage() {
+  if (getIsSending()) return;
+
+  const input = document.getElementById("prompt");
+  const text = input.value.trim();
+  const file = getSelectedFile();
+
+  if (!text && !file) return;
+
+  let chats = getChats();
+  let chat = chats.find(c => c.id === getActiveChatId());
+
+  if (!chat) {
+    newChat();
+    chats = getChats();
+    chat = chats.find(c => c.id === getActiveChatId());
+  }
+
+  const userText = text || "Please explain the uploaded file.";
+  chat.messages.push({ role: "user", text: userText });
+
+  if (file) {
+    chat.messages.push({
+      role: "user",
+      text: "Attached file: " + file.name
+    });
+  }
+
+  if (!chat.title || chat.title === "New chat") {
+    chat.title = userText.slice(0, 60);
+  }
+
+  input.value = "";
+  renderMessages();
+  await persistChat(chat);
+
+  setIsSending(true);
+  const sendButton = document.getElementById("sendButton");
+  if (sendButton) sendButton.disabled = true;
+
+  try {
+    let fileData = null;
+
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        throw new Error("File is too large. Please select a file under 10 MB.");
+      }
+
+      const allowedTypes = [
+        "image/jpeg", "image/png", "image/webp",
+        "image/gif", "text/plain", "text/markdown",
+        "text/csv", "application/pdf"
+      ];
+
+      if (!allowedTypes.includes(file.type)) {
+        throw new Error("This file type is not supported yet.");
+      }
+
+      if (file.type.startsWith("text/")) {
+        fileData = {
+          name: file.name,
+          type: file.type,
+          text: await file.text()
+        };
+      } else {
+        fileData = {
+          name: file.name,
+          type: file.type,
+          base64: await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(
+              String(reader.result).split(",")[1]
+            );
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          })
+        };
+      }
+    }
+
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: userText,
+        messages: chat.messages
+          .filter(m => m.role === "user" || m.role === "assistant")
+          .map(m => ({
+            role: m.role,
+            text: m.text
+          })),
+        file: fileData
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "AI request failed.");
+    }
+
+    const reply = data.reply || "No response received.";
+
+    chat.messages.push({ role: "assistant", text: reply });
+    setSelectedFile(null);
+
+    const upload = document.getElementById("fileUpload");
+    if (upload) upload.value = "";
+
+    const fileStatus = document.getElementById("fileStatus");
+    if (fileStatus) fileStatus.textContent = "";
+
+    await persistChat(chat);
+    renderMessages();
+    renderHistory();
+  } catch (error) {
+    chat.messages.push({
+      role: "assistant",
+      text: "Error: " + error.message
+    });
+
+    await persistChat(chat);
+    renderMessages();
+  } finally {
+    setIsSending(false);
+    if (sendButton) sendButton.disabled = false;
+    input.focus();
+  }
+}
+
+document.getElementById("prompt")?.addEventListener("keydown", event => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    sendMessage();
+  }
+});
+
+document.getElementById("fileUpload")?.addEventListener("change", event => {
+  const file = event.target.files?.[0] || null;
+  setSelectedFile(file);
+
+  const status = document.getElementById("fileStatus");
+  if (status) {
+    status.textContent = file
+      ? "Selected: " + file.name
+      : "";
+  }
+});
+
+function exportChats() {
+  const data = JSON.stringify(getChats(), null, 2);
+  const blob = new Blob([data], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+
+  a.href = url;
+  a.download = "ai-universe-chat-backup.json";
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
+async function clearChats() {
+  if (!confirm("Delete all your saved chats? Download a backup first if needed.")) {
+    return;
+  }
+
+  const user = getCurrentUser();
+  const chats = getChats();
+
+  if (user) {
+    try {
+      for (const chat of chats) {
+        await deleteDoc(
+          doc(
+            getFirestore(),
+            "users",
+            user.uid,
+            "chats",
+            chat.id
+          )
+        );
+      }
+    } catch (error) {
+      showStatus("Some cloud chats could not be deleted: " + error.message);
+      return;
+    }
+  }
+
+  localStorage.removeItem("ai_universe_backup");
+  chats.splice(0, chats.length);
+  setActiveChatId(null);
+
+  renderMessages();
+  renderHistory();
+  showStatus("Your saved chats were deleted.");
+}
+
+async function loadJoke() {
+  const output = document.getElementById("utilityOutput");
+  output.textContent = "Loading joke...";
+
+  try {
+    const response = await fetch(
+      "https://v2.jokeapi.dev/joke/Programming?type=single"
+    );
+    if (!response.ok) throw new Error("Request failed");
+
+    const data = await response.json();
+    output.textContent = data.joke || "No joke available.";
+  } catch {
+    output.textContent = "Could not load the joke. Try again later.";
+  }
+}
+
+async function loadIP() {
+  const output = document.getElementById("utilityOutput");
+  output.textContent = "Loading public IP...";
+
+  try {
+    const response = await fetch("https://api.ipify.org?format=json");
+    if (!response.ok) throw new Error("Request failed");
+
+    const data = await response.json();
+    output.textContent = "Your public IP: " + data.ip;
+  } catch {
+    output.textContent = "Could not load your public IP.";
+  }
+}
+
+function generateVideoPlan() {
+  const topic = document.getElementById("videoTopic").value.trim();
+  const duration = Number(document.getElementById("videoDuration").value);
+  const language = document.getElementById("videoLanguage").value;
+  const style = document.getElementById("videoStyle").value;
+  const output = document.getElementById("videoOutput");
+
+  if (!topic) {
+    alert("Please enter a video topic.");
+    return;
+  }
+
+  const chapters = [
+    ["Introduction and hook", 0, 0.08],
+    ["Background and context", 0.08, 0.25],
+    ["Main story and explanation", 0.25, 0.60],
+    ["Detailed analysis and examples", 0.60, 0.85],
+    ["Conclusion and call to action", 0.85, 1]
+  ];
+
+  const lines = chapters.map((chapter, index) => {
+    const start = Math.round(duration * chapter[1]);
+    const end = Math.round(duration * chapter[2]);
+
+    return `
+      <li>
+        <strong>${chapter[0]}</strong>
+        <span>${start}–${end} minutes</span>
+      </li>`;
+  }).join("");
+
+  output.replaceChildren();
+
+  const heading = document.createElement("h3");
+  heading.textContent = topic;
+
+  const details = document.createElement("p");
+  details.textContent =
+    duration + " minutes · " + language + " · " + style;
+
+  const list = document.createElement("ol");
+  list.innerHTML = lines;
+
+  const note = document.createElement("p");
+  note.textContent =
+    "This is a planning template, not a generated finished video. " +
+    "Use AI chat to develop the narration and scene prompts.";
+
+  output.append(heading, details, list, note);
+
+  const prompt = document.getElementById("prompt");
+  prompt.value =
+    "Create a detailed YouTube video plan in " + language +
+    " for the topic: " + topic +
+    ". Target duration: " + duration + " minutes." +
+    " Style: " + style +
+    ". Include a strong hook, detailed narration, chapter timestamps, " +
+    "scene-by-scene visual prompts, transitions, sound design, " +
+    "and a conclusion. Make the content suitable for YouTube.";
+
+  switchView("chatView");
+  prompt.focus();
+}
+
+window.switchView = switchView;
+window.toggleSidebar = toggleSidebar;
+window.newChat = newChat;
+window.sendMessage = sendMessage;
+window.exportChats = exportChats;
+window.clearChats = clearChats;
+window.loadJoke = loadJoke;
+window.loadIP = loadIP;
+window.generateVideoPlan = generateVideoPlan;
+
+/* Load local backup immediately while authentication initializes. */
+if (getChats().length === 0) {
+  const saved = JSON.parse(
+    localStorage.getItem("ai_universe_backup") || "[]"
+  );
+  if (Array.isArray(saved)) getChats().push(...saved);
+}
+
+if (!getActiveChatId() && getChats().length) {
+  setActiveChatId(getChats()[0].id);
+}
+
+renderMessages();
+renderHistory();
+</script>
+
 </body>
 </html>
