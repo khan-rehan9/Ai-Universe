@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Universe</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #20283a;
+    }
+    header {
+      padding: 24px 16px;
+      background: white;
+      border-bottom: 1px solid #e5e9f2;
+    }
+    h1 { margin: 0 0 8px; color: #5145cd; }
+    p { color: #667085; }
+    main { max-width: 900px; margin: auto; padding: 18px; }
+    input {
+      width: 100%;
+      padding: 15px;
+      border: 1px solid #d8deea;
+      border-radius: 12px;
+      font-size: 16px;
+      background: white;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .tool {
+      display: block;
+      padding: 18px 14px;
+      background: white;
+      border: 1px solid #e5e9f2;
+      border-radius: 14px;
+      text-decoration: none;
+      color: #20283a;
+    }
+    .tool:active { background: #edf0ff; }
+    .emoji { font-size: 28px; }
+    .tool h2 { font-size: 17px; margin: 12px 0 6px; }
+    .tool p { font-size: 13px; margin: 0; }
+    footer { text-align: center; padding: 25px; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🌌 AI Universe</h1>
+    <p>Your personal all-in-one AI dashboard</p>
+  </header>
+
+  <main>
+    <input id="search" type="search"
+      placeholder="Search AI tools..."
+      aria-label="Search AI tools">
+
+    <div class="grid" id="tools">
+      <a class="tool" href="https://chatgpt.com/" target="_blank" rel="noopener">
+        <span class="emoji">💬</span><h2>ChatGPT</h2><p>AI assistant</p>
+      </a>
+      <a class="tool" href="https://gemini.google.com/" target="_blank" rel="noopener">
+        <span class="emoji">✨</span><h2>Gemini</h2><p>Google AI</p>
+      </a>
+      <a class="tool" href="https://claude.ai/" target="_blank" rel="noopener">
+        <span class="emoji">🧠</span><h2>Claude</h2><p>Writing and reasoning</p>
+      </a>
+      <a class="tool" href="https://chat.deepseek.com/" target="_blank" rel="noopener">
+        <span class="emoji">🔎</span><h2>DeepSeek</h2><p>AI chat and coding</p>
+      </a>
+      <a class="tool" href="https://www.perplexity.ai/" target="_blank" rel="noopener">
+        <span class="emoji">🌐</span><h2>Perplexity</h2><p>AI-powered search</p>
+      </a>
+      <a class="tool" href="https://www.meta.ai/" target="_blank" rel="noopener">
+        <span class="emoji">♾️</span><h2>Meta AI</h2><p>AI assistant</p>
+      </a>
+      <a class="tool" href="https://labs.google/fx/tools/flow" target="_blank" rel="noopener">
+        <span class="emoji">🎬</span><h2>Google Flow</h2><p>AI video creation</p>
+      </a>
+      <a class="tool" href="https://www.youtube.com/" target="_blank" rel="noopener">
+        <span class="emoji">▶️</span><h2>YouTube</h2><p>Videos and learning</p>
+      </a>
+      <a class="tool" href="https://copilot.microsoft.com/" target="_blank" rel="noopener">
+        <span class="emoji">🤖</span><h2>Copilot</h2><p>Microsoft AI</p>
+      </a>
+      <a class="tool" href="https://notebooklm.google.com/" target="_blank" rel="noopener">
+        <span class="emoji">📚</span><h2>NotebookLM</h2><p>Research and study</p>
+      </a>
+      <a class="tool" href="https://aistudio.google.com/" target="_blank" rel="noopener">
+        <span class="emoji">🛠️</span><h2>Google AI Studio</h2><p>Build with AI</p>
+      </a>
+      <a class="tool" href="https://huggingface.co/" target="_blank" rel="noopener">
+        <span class="emoji">🤗</span><h2>Hugging Face</h2><p>Explore AI models</p>
+      </a>
+    </div>
+  </main>
+
+  <footer>AI Universe · Your personal AI hub</footer>
+
+  <script>
+    const search = document.getElementById("search");
+    const cards = document.querySelectorAll(".tool");
+
+    search.addEventListener("input", () => {
+      const query = search.value.toLowerCase().trim();
+      cards.forEach(card => {
+        card.style.display =
+          card.innerText.toLowerCase().includes(query) ? "" : "none";
+      });
+    });
+  </script>
+</body>
+</html>
