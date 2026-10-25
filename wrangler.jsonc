@@ -1,6 +1,4 @@
-
-{
-  "$schema": "./node_modules/wrangler/config-schema.json",
+": "./node_modules/wrangler/config-schema.json",
   "name": "ai-universee",
   "main": "./worker.js",
   "compatibility_date": "2026-10-26",
