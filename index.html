@@ -1,653 +1,497 @@
-
-<!DOCTYPE html>
-<html lang="en">
+!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#090d18">
 <meta name="description" content="AI Universe - Your personal AI workspace">
 <title>AI Universe</title>
-
 <style>
-:root {
-  color-scheme: dark;
-  --bg: #090d18;
-  --panel: #111827;
-  --border: #263247;
-  --text: #f1f5f9;
-  --muted: #94a3b8;
-  --accent: #8b5cf6;
-  --danger: #ef4444;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  min-height: 100vh;
-  background: var(--bg);
-  color: var(--text);
-  font-family: system-ui, sans-serif;
-}
-button, input, textarea, select { font: inherit; }
-button { cursor: pointer; }
-button:disabled { opacity: .55; cursor: not-allowed; }
-[hidden] { display: none !important; }
-
-button:focus-visible, input:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid #a78bfa;
-  outline-offset: 2px;
-}
-.login-screen {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 22px;
-}
-.login-card {
-  width: 100%;
-  max-width: 410px;
-  padding: 30px 22px;
-  text-align: center;
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  background: var(--panel);
-}
-.logo {
-  font-size: 28px;
-  font-weight: 800;
-  margin-bottom: 14px;
-}
-.logo span { color: #a78bfa; }
-.login-card p { color: var(--muted); line-height: 1.6; }
-.google-btn, .primary-btn {
-  width: 100%;
-  min-height: 48px;
-  border: 0;
-  border-radius: 11px;
-  padding: 12px;
-  background: var(--accent);
-  color: white;
-  font-weight: 650;
-}
-.google-btn { margin-top: 16px; }
-.small-note { font-size: 12px; color: var(--muted); }
-
-.app {
-  display: flex;
-  min-height: 100vh;
-}
-.sidebar {
-  width: 260px;
-  flex-shrink: 0;
-  padding: 16px;
-  background: var(--panel);
-  border-right: 1px solid var(--border);
-  overflow-y: auto;
-}
-.brand {
-  font-size: 23px;
-  font-weight: 800;
-  margin: 6px 0 22px;
-}
-.brand span { color: #a78bfa; }
-.nav-btn, .new-chat, .history-btn {
-  display: block;
-  width: 100%;
-  padding: 12px;
-  margin: 7px 0;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: transparent;
-  color: var(--text);
-  text-align: left;
-}
-.nav-btn:hover, .history-btn:hover { background: #202b40; }
-.new-chat { background: var(--accent); border-color: var(--accent); }
-.account-box {
-  margin-top: 24px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border);
-  overflow-wrap: anywhere;
-}
-.account-email { font-size: 13px; color: var(--muted); }
-.logout-btn {
-  margin-top: 10px;
-  width: 100%;
-  padding: 10px;
-  color: #fecaca;
-  background: transparent;
-  border: 1px solid #7f1d1d;
-  border-radius: 9px;
-}
-.main {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0;
-  min-height: 100vh;
-}
-.topbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--border);
-}
-.topbar h1 { margin: 0; font-size: 19px; }
-.menu-btn {
-  display: none;
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--panel);
-  color: var(--text);
-}
-.messages {
-  flex: 1;
-  width: 100%;
-  max-width: 850px;
-  margin: 0 auto;
-  padding: 20px 16px;
-}
-.welcome { padding: 35px 12px; text-align: center; }
-.welcome h2 { font-size: 27px; }
-.welcome p, .muted { color: var(--muted); }
-.message {
-  margin: 12px 0;
-  padding: 14px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  line-height: 1.65;
-  overflow-wrap: anywhere;
-  white-space: pre-wrap;
-}
-.message.user { background: #19243a; }
-.message.assistant { background: var(--panel); }
-.composer-wrap {
-  position: sticky;
-  bottom: 0;
-  padding: 12px;
-  background: var(--bg);
-  border-top: 1px solid var(--border);
-}
-.composer {
-  display: flex;
-  gap: 9px;
-  max-width: 850px;
-  margin: auto;
-  align-items: flex-end;
-}
-.composer textarea {
-  flex: 1;
-  min-width: 0;
-  min-height: 48px;
-  max-height: 140px;
-  resize: vertical;
-  padding: 12px;
-  color: var(--text);
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-}
-.send-btn {
-  min-height: 48px;
-  padding: 0 16px;
-  border: 0;
-  border-radius: 12px;
-  background: var(--accent);
-  color: white;
-}
-.status {
-  max-width: 850px;
-  margin: 8px auto 0;
-  color: var(--muted);
-  font-size: 13px;
-  overflow-wrap: anywhere;
-}
-.tool-card {
-  margin: 14px 0;
-  padding: 16px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: var(--panel);
-}
-.tool-card label {
-  display: block;
-  margin: 12px 0 6px;
-}
-.tool-card input, .tool-card textarea, .tool-card select {
-  width: 100%;
-  padding: 11px;
-  color: var(--text);
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 9px;
-}
-.tool-card textarea { min-height: 90px; resize: vertical; }
-.tool-card .primary-btn { margin-top: 14px; }
-.file-list { overflow-wrap: anywhere; color: var(--muted); }
-@media (max-width: 700px) {
-  .sidebar {
-    display: none;
-    position: fixed;
-    inset: 0 auto 0 0;
-    z-index: 20;
-    width: min(290px, 86vw);
-    box-shadow: 10px 0 35px #0008;
-  }
-  .sidebar.open { display: block; }
-  .menu-btn { display: block; }
-  .messages { padding: 12px; }
-  .welcome h2 { font-size: 23px; }
-  .composer-wrap { padding: 9px; }
-  .send-btn { padding: 0 12px; }
-  .topbar h1 { font-size: 17px; }
+:root{color-scheme:dark;--bg:#090d18;--panel:#111827;--border:#263247;--text:#f1f5f9;--muted:#94a3b8;--accent:#8b5cf6;--danger:#ef4444}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif}
+button,input,textarea,select{font:inherit}button{cursor:pointer}
+button:disabled{opacity:.55;cursor:not-allowed}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #a78bfa;outline-offset:2px}
+.app{display:flex;min-height:100vh}
+.sidebar{width:255px;flex-shrink:0;padding:16px;background:var(--panel);border-right:1px solid var(--border)}
+.brand{font-size:23px;font-weight:800;margin:4px 0 22px}.brand span{color:#a78bfa}
+.nav-btn,.new-chat,.small-btn{display:block;width:100%;padding:11px;margin:6px 0;border:1px solid var(--border);border-radius:10px;background:transparent;color:var(--text);text-align:left}
+.new-chat{background:var(--accent);border-color:var(--accent)}
+.nav-btn:hover,.small-btn:hover{background:#202b40}
+.sidebar-label{margin-top:22px;color:var(--muted);font-size:13px}
+.history-row{display:flex;gap:4px;align-items:center}
+.history-open{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+.delete-chat{width:40px;text-align:center;color:#fca5a5}
+.main{display:flex;flex-direction:column;flex:1;min-width:0;min-height:100vh}
+.topbar{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.topbar h1{margin:0;font-size:19px;flex:1}
+.menu-btn{display:none;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--panel);color:var(--text)}
+.account{font-size:12px;color:var(--muted);max-width:145px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.messages{flex:1;width:100%;max-width:900px;margin:0 auto;padding:22px 18px}
+.welcome{text-align:center;padding:30px 12px}.welcome h2{font-size:28px}.welcome p,.muted{color:var(--muted)}
+.message{margin:12px 0;padding:14px;border:1px solid var(--border);border-radius:14px;line-height:1.65;overflow-wrap:anywhere;white-space:pre-wrap}
+.message.user{background:#19243a}.message.assistant{background:var(--panel)}
+.composer-wrap{position:sticky;bottom:0;padding:12px;background:var(--bg);border-top:1px solid var(--border)}
+.composer{display:flex;gap:9px;max-width:850px;margin:auto}
+.composer textarea{flex:1;min-width:0;min-height:48px;max-height:150px;resize:vertical;padding:12px;color:var(--text);background:var(--panel);border:1px solid var(--border);border-radius:12px}
+.primary,.send-btn{padding:11px 16px;border:0;border-radius:10px;background:var(--accent);color:white}
+.secondary{padding:10px 13px;border:1px solid var(--border);border-radius:10px;background:var(--panel);color:var(--text)}
+.status{max-width:850px;margin:8px auto 0;color:var(--muted);font-size:13px;overflow-wrap:anywhere}
+.tool-card{padding:16px;margin:12px 0;background:var(--panel);border:1px solid var(--border);border-radius:14px}
+.tool-card h2,.tool-card h3{margin-top:0}
+.tool-card input,.tool-card textarea,.tool-card select{display:block;width:100%;padding:11px;margin:9px 0;background:var(--bg);border:1px solid var(--border);border-radius:9px;color:var(--text)}
+.tool-card textarea{min-height:100px;resize:vertical}
+.tool-actions{display:flex;gap:8px;flex-wrap:wrap}
+#loginScreen{min-height:100vh;display:grid;place-items:center;padding:20px}
+.login-card{width:100%;max-width:420px;padding:26px;background:var(--panel);border:1px solid var(--border);border-radius:18px}
+.login-card h1{margin-top:0}.login-card p{color:var(--muted);line-height:1.6}
+.login-card button{width:100%;margin-top:10px}
+.error{color:#fca5a5}
+#appShell[hidden],#loginScreen[hidden],[hidden]{display:none!important}
+@media(max-width:700px){
+ .sidebar{display:none;position:fixed;inset:0 auto 0 0;z-index:20;width:min(290px,85vw);overflow-y:auto;box-shadow:10px 0 35px #0008}
+ .sidebar.open{display:block}.menu-btn{display:block}.messages{padding:12px}
+ .welcome h2{font-size:23px}.composer-wrap{padding:9px;padding-bottom:max(9px,env(safe-area-inset-bottom))}
+ .send-btn{padding:0 13px}.topbar{padding:12px}.account{max-width:85px}
 }
 </style>
 </head>
-<body>
-
-<!-- Login is required; the next part connects real Firebase Auth. -->
-<section id="loginScreen" class="login-screen">
-  <div class="login-card">
-    <div class="logo">🌌 AI <span>Universe</span></div>
-    <h1>Welcome back</h1>
-    <p>Sign in with your Google account to access your AI workspace and personal chat history.</p>
-    <button id="googleLoginBtn" class="google-btn" type="button">
-      Continue with Google
-    </button>
-    <p id="loginStatus" class="small-note" role="status">
-      Google sign-in is required.
-    </p>
+<body><section id="loginScreen">
+ <div class="login-card">
+  <div class="brand">🌌 AI <span>Universe</span></div>
+  <h1>Welcome back</h1>
+  <p>Sign in with your Google account to use AI Universe. Guest access is disabled.</p>
+  <button class="primary" id="googleLoginBtn">Continue with Google</button>
+  <p id="loginStatus" role="status" aria-live="polite"></p>
+ </div>
+</section><div class="app" id="appShell" hidden>
+ <aside class="sidebar" id="sidebar">
+  <div class="brand">🌌 AI <span>Universe</span></div>
+  <button class="new-chat" id="newChatBtn">+ New Chat</button>
+  <button class="nav-btn" data-view="chat">💬 AI Chat</button>
+  <button class="nav-btn" data-view="youtube">▶ YouTube Planner</button>
+  <button class="nav-btn" data-view="files">📎 File Tools</button>
+  <button class="nav-btn" data-view="utilities">🛠 Utilities</button>
+  <button class="nav-btn" data-view="history">🕘 Chat History</button>
+  <button class="nav-btn" id="exportBtn">📥 Export chat backup</button>
+  <div class="sidebar-label">Your conversations</div>
+  <div id="chatHistory"></div>
+  <div class="sidebar-label">Account</div>
+  <button class="nav-btn" id="logoutBtn">↪ Sign out</button>
+ </aside> <main class="main">
+  <header class="topbar">
+   <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
+   <h1 id="viewTitle">AI Universe Chat</h1>
+   <span class="account" id="accountLabel"></span>
+  </header>
+  <section class="messages" id="messages" aria-live="polite"></section>
+  <div class="composer-wrap" id="composerWrap">
+   <form class="composer" id="chatForm">
+    <textarea id="messageInput" rows="1" placeholder="Message AI Universe..." aria-label="Your message" required></textarea>
+    <button class="send-btn" id="sendBtn" type="submit">Send</button>
+   </form>
+   <div class="status" id="status" role="status" aria-live="polite"></div>
   </div>
-</section>
-
-<div id="app" class="app" hidden>
-  <aside class="sidebar" id="sidebar">
-    <div class="brand">🌌 AI <span>Universe</span></div>
-    <button class="new-chat" id="newChatBtn">+ New Chat</button>
-    <button class="nav-btn" data-view="chat">💬 AI Chat</button>
-    <button class="nav-btn" data-view="youtube">▶ YouTube Planner</button>
-    <button class="nav-btn" data-view="files">📎 File Tools</button>
-    <button class="nav-btn" data-view="utilities">🛠 Utilities</button>
-    <button class="nav-btn" data-view="history">🕘 Chat History</button>
-
-    <div class="muted" style="margin-top:22px">Your conversations</div>
-    <div id="chatHistory"></div>
-
-    <div class="account-box">
-      <div id="accountName">Signed-in account</div>
-      <div id="accountEmail" class="account-email"></div>
-      <button id="logoutBtn" class="logout-btn" type="button">
-        Log out
-      </button>
-    </div>
-  </aside>
-
-  <main class="main">
-    <header class="topbar">
-      <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
-      <h1 id="viewTitle">AI Universe Chat</h1>
-    </header>
-
-    <section class="messages" id="messages" aria-live="polite">
-      <div class="welcome">
-        <h2>Welcome to AI Universe ✨</h2>
-        <p>Your personal AI workspace.</p>
-        <p>Ask a question to get started.</p>
-      </div>
-    </section>
-
-    <div class="composer-wrap" id="composerWrap">
-      <form class="composer" id="chatForm">
-        <textarea id="messageInput" rows="1"
-          placeholder="Message AI Universe..."
-          aria-label="Your message" required></textarea>
-        <button class="send-btn" id="sendBtn" type="submit">Send</button>
-      </form>
-      <div class="status" id="status" role="status"></div>
-    </div>
-  </main>
-</div>
-
-<!-- YOUTUBE PLANNER -->
-<section id="youtubeView" class="tool-card" hidden>
-  <h2>▶ YouTube AI Planner</h2>
-  <p class="muted">Create video ideas and plans using AI.</p>
-
-  <label for="ytTopic">Video topic</label>
-  <input id="ytTopic" type="text"
-    placeholder="e.g. AI tools for students">
-
-  <label for="ytLanguage">Video language</label>
-  <select id="ytLanguage">
-    <option value="Hindi">Hindi</option>
-    <option value="Hinglish">Hinglish</option>
-    <option value="English">English</option>
-    <option value="Urdu">Urdu</option>
-  </select>
-
-  <label for="ytType">Video format</label>
-  <select id="ytType">
-    <option value="Short">YouTube Shorts</option>
-    <option value="Long video">Long video</option>
-    <option value="Tutorial">Tutorial</option>
-    <option value="Educational">Educational</option>
-  </select>
-
-  <label for="ytDuration">Video duration</label>
-  <select id="ytDuration">
-    <option value="30 seconds">30 seconds</option>
-    <option value="60 seconds">60 seconds</option>
-    <option value="3 minutes">3 minutes</option>
-    <option value="5 minutes">5 minutes</option>
-    <option value="10 minutes">10 minutes</option>
-  </select>
-
-  <button id="ytGenerateBtn" class="primary-btn" type="button">
-    Generate AI Plan
-  </button>
-
-  <div id="ytResult" class="message assistant" hidden></div>
-</section>
-
-<!-- FILE TOOLS -->
-<section id="filesView" class="tool-card" hidden>
-  <h2>📎 File Tools</h2>
-  <p class="muted">
-    Select a supported text-based file to read its contents.
-    Files are not uploaded automatically.
-  </p>
-
-  <label for="fileInput">Choose a file</label>
-  <input id="fileInput" type="file"
-    accept=".txt,.md,.csv,.json,.html,.css,.js,.xml,.log,.pdf">
-
-  <div id="fileStatus" class="status" role="status"></div>
-
-  <label for="fileContent">Extracted text</label>
-  <textarea id="fileContent"
-    placeholder="Selected file text will appear here."
-    rows="8"></textarea>
-
-  <button id="fileAskBtn" class="primary-btn" type="button">
-    Ask AI About This File
-  </button>
-</section>
-
-<!-- UTILITIES -->
-<section id="utilitiesView" class="tool-card" hidden>
-  <h2>🛠 Utilities</h2>
-  <p class="muted">Simple tools for everyday tasks.</p>
-
-  <h3>Word Counter</h3>
-  <label for="utilityText">Enter text</label>
-  <textarea id="utilityText" rows="5"
-    placeholder="Paste or type your text here..."></textarea>
-  <button id="countWordsBtn" class="primary-btn" type="button">
-    Count Words and Characters
-  </button>
-  <div id="wordResult" class="message assistant" aria-live="polite"></div>
-
-  <hr style="border-color:var(--border);margin:24px 0">
-
-  <h3>Text Case Converter</h3>
-  <label for="caseText">Text to convert</label>
-  <textarea id="caseText" rows="3"
-    placeholder="Enter text to convert..."></textarea>
-
-  <label for="caseType">Conversion</label>
-  <select id="caseType">
-    <option value="upper">UPPERCASE</option>
-    <option value="lower">lowercase</option>
-    <option value="title">Title Case</option>
-  </select>
-
-  <button id="convertCaseBtn" class="primary-btn" type="button">
-    Convert Text
-  </button>
-  <div id="caseResult" class="message assistant"
-    aria-live="polite"></div>
-</section>
-
-<!-- CHAT HISTORY VIEW -->
-<section id="historyView" class="tool-card" hidden>
-  <h2>🕘 Chat History</h2>
-  <p class="muted">
-    Your account's saved conversations will appear in the sidebar.
-  </p>
-  <button id="exportChatsBtn" class="primary-btn" type="button">
-    Export Chat Backup (JSON)
-  </button>
-  <label for="importChatsInput">Import a JSON backup</label>
-  <input id="importChatsInput" type="file" accept=".json">
-  <div id="historyStatus" class="status" role="status"></div>
-</section>
-  
-<script type="module">
-import { initializeApp } from
-  "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+ </main>
+</div><script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
-  onAuthStateChanged,
-  signOut
+ getAuth,GoogleAuthProvider,signInWithRedirect,getRedirectResult,
+ onAuthStateChanged,signOut
 } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import {
+ getFirestore,collection,doc,getDocs,setDoc,deleteDoc
+} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
+/* STEP 1: Replace these values with your Firebase web-app config. */
 const firebaseConfig = {
-  apiKey: "PASTE_FIREBASE_API_KEY",
-  authDomain: "PASTE_PROJECT_ID.firebaseapp.com",
-  projectId: "PASTE_PROJECT_ID",
-  appId: "PASTE_FIREBASE_APP_ID"
+ apiKey:"YOUR_FIREBASE_API_KEY",
+ authDomain:"YOUR_PROJECT_ID.firebaseapp.com",
+ projectId:"YOUR_PROJECT_ID",
+ appId:"YOUR_FIREBASE_APP_ID"
 };
 
 const $ = id => document.getElementById(id);
-const loginScreen = $("loginScreen");
-const appView = $("app");
-const sidebar = $("sidebar");
-const messages = $("messages");
-const input = $("messageInput");
-const status = $("status");
+const loginScreen=$("loginScreen");
+const appShell=$("appShell");
+const sidebar=$("sidebar");
+const messages=$("messages");
+const input=$("messageInput");
+const sendBtn=$("sendBtn");
+const status=$("status");
+const composerWrap=$("composerWrap");
+const historyBox=$("chatHistory");
 
-let auth;
-let currentUser = null;
-let chats = [];
-let activeChatId = null;
-let busy = false;
-let currentView = "chat";
+let auth=null,db=null,currentUser=null;
+let chats=[],activeChatId=null,currentView="chat",busy=false;
+let switching=false;
 
-const id = () =>
-  Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const makeId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,9);
+const activeChat=()=>chats.find(c=>c.id===activeChatId);
+const setStatus=t=>{status.textContent=t||"";};
+const showLogin=t=>{$("loginStatus").textContent=t||"";};
 
-function setStatus(message) {
-  status.textContent = message || "";
+function safeTitle(text){return text.trim().slice(0,38)||"New Chat";}
+
+function normalizeChat(c){
+ if(!c||typeof c.id!=="string"||!Array.isArray(c.messages))return null;
+ return {
+  id:c.id,
+  title:typeof c.title==="string"?c.title:"New Chat",
+  messages:c.messages.filter(m=>m&&["user","assistant"].includes(m.role)&&typeof m.text==="string").slice(-200)
+ };
 }
 
-function showLogin(message) {
-  loginScreen.hidden = false;
-  appView.hidden = true;
-  $("loginStatus").textContent = message;
-}
-
-function showApp(user) {
-  currentUser = user;
-  loginScreen.hidden = true;
-  appView.hidden = false;
-  $("accountName").textContent = user.displayName || "Google user";
-  $("accountEmail").textContent = user.email || "";
-}
-
-function createChat() {
-  const chat = {
-    id: id(),
-    title: "New Chat",
-    messages: []
-  };
-  chats.push(chat);
-  activeChatId = chat.id;
-  renderChat();
+function renderChat(){
+ messages.replaceChildren();
+ const chat=activeChat();
+ if(!chat||!chat.messages.length){
+  const box=document.createElement("div");
+  box.className="welcome";
+  const h=document.createElement("h2");
+  h.textContent="Welcome to AI Universe ✨";
+  const p=document.createElement("p");
+  p.textContent="Your personal AI workspace. Ask a question to get started.";
+  box.append(h,p);
+ }else{
+  const box=document.createElement("div");
+  box.className="chat-content";
+  chat.messages.forEach(m=>{
+   const el=document.createElement("div");
+   el.className="message "+m.role;
+   el.textContent=(m.role==="user"?"You":"AI Universe")+"
+"+m.text;
+   box.appendChild(el);
+  });
+  messages.appendChild(box);
   renderHistory();
+  return;
+ }
+ messages.appendChild(box);
+ renderHistory();
 }
 
-function activeChat() {
-  return chats.find(chat => chat.id === activeChatId);
+function renderHistory(){
+ historyBox.replaceChildren();
+ [...chats].reverse().forEach(chat=>{
+  const row=document.createElement("div");
+  row.className="history-row";
+  const open=document.createElement("button");
+  open.className="nav-btn history-open";
+  open.textContent=chat.title||"New Chat";
+  open.title=chat.title;
+  open.onclick=()=>openChat(chat.id);
+  const del=document.createElement("button");
+  del.className="nav-btn delete-chat";
+  del.textContent="×";
+  del.setAttribute("aria-label","Delete "+chat.title);
+  del.onclick=()=>removeChat(chat.id);
+  row.append(open,del);
+  historyBox.appendChild(row);
+ });
 }
 
-function renderChat() {
-  messages.replaceChildren();
-  const chat = activeChat();
-
-  if (!chat || chat.messages.length === 0) {
-    const box = document.createElement("div");
-    box.className = "welcome";
-    const title = document.createElement("h2");
-    title.textContent = "Welcome to AI Universe ✨";
-    const p = document.createElement("p");
-    p.textContent = "Ask a question to get started.";
-    box.append(title, p);
-    messages.appendChild(box);
-  } else {
-    chat.messages.forEach(message => {
-      const element = document.createElement("div");
-      element.className = "message " + message.role;
-      element.textContent = message.text;
-      messages.appendChild(element);
-    });
-  }
-}
-
-function renderHistory() {
-  const box = $("chatHistory");
-  box.replaceChildren();
-
-  chats.slice().reverse().forEach(chat => {
-    const row = document.createElement("div");
-    row.style.display = "flex";
-    row.style.gap = "4px";
-
-    const open = document.createElement("button");
-    open.className = "history-btn";
-    open.textContent = chat.title;
-    open.style.flex = "1";
-    open.onclick = () => {
-      activeChatId = chat.id;
-      showView("chat");
-      renderChat();
-      sidebar.classList.remove("open");
-    };
-
-    const del = document.createElement("button");
-    del.className = "nav-btn";
-    del.textContent = "×";
-    del.setAttribute("aria-label", "Delete chat");
-    del.onclick = async () => {
-      chats = chats.filter(item => item.id !== chat.id);
-      if (activeChatId === chat.id) {
-        activeChatId = chats.length ? chats[chats.length - 1].id : null;
-      }
-      if (!activeChatId) createChat();
-      renderHistory();
-      renderChat();
-      setStatus("Chat removed from this session.");
-    };
-
-    row.append(open, del);
-    box.appendChild(row);
+async function persistChat(chat){
+ if(!currentUser||!db)return false;
+ try{
+  await setDoc(doc(db,"users",currentUser.uid,"chats",chat.id),{
+   title:chat.title,
+   messages:chat.messages,
+   updatedAt:Date.now()
   });
+  return true;
+ }catch(error){
+  console.error("Chat save failed:",error);
+  setStatus("Could not sync chat to cloud. Check Firestore rules and connection.");
+  return false;
+ }
 }
 
-function showView(view) {
-  currentView = view;
-  const titles = {
-    chat: "AI Universe Chat",
-    youtube: "YouTube Planner",
-    files: "File Tools",
-    utilities: "Utilities",
-    history: "Chat History"
-  };
-
-  $("viewTitle").textContent = titles[view] || "AI Universe";
-  $("composerWrap").hidden = view !== "chat";
-
-  ["youtube", "files", "utilities", "history"].forEach(name => {
-    $(name + "View").hidden = name !== view;
-  });
-
-  messages.hidden = view !== "chat";
-
-  if (view === "history") {
-    $("historyView").hidden = false;
-  }
-
-  if (view === "chat") renderChat();
-}
-
-$("newChatBtn").addEventListener("click", () => {
-  createChat();
-  showView("chat");
+async function loadChats(){
+ if(!currentUser||!db)return;
+ switching=true;
+ setStatus("Loading your cloud chats...");
+ try{
+  const snapshot=await getDocs(collection(db,"users",currentUser.uid,"chats"));
+  chats=snapshot.docs.map(d=>normalizeChat({id:d.id,...d.data()})).filter(Boolean);
+  chats.sort((a,b)=>a.id.localeCompare(b.id));
+  activeChatId=chats.length?chats[chats.length-1].id:null;
+  if(!activeChatId)await createChat();
+  else renderChat();
   setStatus("");
-  sidebar.classList.remove("open");
-});
+ }catch(error){
+  console.error("Cloud history load failed:",error);
+  chats=[];
+  activeChatId=null;
+  renderChat();
+  setStatus("Could not load cloud chats. Check your Firestore configuration and rules.");
+ }finally{
+  switching=false;
+ }
+}
 
-document.querySelectorAll("[data-view]").forEach(button => {
-  button.addEventListener("click", () => {
-    showView(button.dataset.view);
-    sidebar.classList.remove("open");
+async function createChat(){
+ if(!currentUser)return;
+ const chat={id:makeId(),title:"New Chat",messages:[]};
+ chats.push(chat);
+ activeChatId=chat.id;
+ renderChat();
+ await persistChat(chat);
+}
+
+  async function openChat(id){
+ if(busy)return;
+ if(!chats.some(c=>c.id===id))return;
+ activeChatId=id;
+ currentView="chat";
+ $("viewTitle").textContent="AI Universe Chat";
+ composerWrap.hidden=false;
+ sidebar.classList.remove("open");
+ setStatus("");
+ renderChat();
+}
+
+async function removeChat(id){
+ if(busy)return;
+ const chat=chats.find(c=>c.id===id);
+ if(!chat)return;
+ if(!confirm("Delete this chat permanently from your cloud history?"))return;
+ try{
+  await deleteDoc(doc(db,"users",currentUser.uid,"chats",id));
+  chats=chats.filter(c=>c.id!==id);
+  if(activeChatId===id)activeChatId=null;
+  if(!activeChatId)await createChat();
+  else renderChat();
+  setStatus("Chat deleted.");
+ }catch(error){
+  console.error(error);
+  setStatus("Delete failed. Check your connection and Firestore rules.");
+ }
+}
+
+async function askAI(text){
+ if(!currentUser)throw new Error("Sign in with Google first.");
+ const token=await currentUser.getIdToken();
+ let response;
+ try{
+  response=await fetch("/api/chat",{
+   method:"POST",
+   headers:{
+    "Content-Type":"application/json",
+    "Authorization":"Bearer "+token
+   },
+   body:JSON.stringify({messages:[{role:"user",text}]})
   });
+ }catch{
+  throw new Error("Network error. Check your internet connection and try again.");
+ }
+ let data;
+ try{data=await response.json();}
+ catch{throw new Error("Server returned an invalid response.");}
+ if(!response.ok)throw new Error(typeof data.error==="string"?data.error:"AI request failed ("+response.status+").");
+ if(!data||typeof data.reply!=="string"||!data.reply.trim())throw new Error("AI returned an empty response. Please retry.");
+ return data.reply.trim();
+}
+
+async function sendMessage(text){
+ const chat=activeChat();
+ if(!currentUser||!chat||busy)return;
+ busy=true;
+ sendBtn.disabled=true;
+ setStatus("AI is thinking...");
+ chat.messages.push({role:"user",text});
+ if(chat.title==="New Chat")chat.title=safeTitle(text);
+ renderChat();
+ await persistChat(chat);
+ try{
+  const token=await currentUser.getIdToken();
+  const response=await fetch("/api/chat",{
+   method:"POST",
+   headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},
+   body:JSON.stringify({messages:chat.messages.map(m=>({role:m.role,text:m.text}))})
+  });
+  let data;
+  try{data=await response.json();}
+  catch{throw new Error("Server returned an invalid response.");}
+  if(!response.ok)throw new Error(typeof data.error==="string"?data.error:"AI request failed ("+response.status+").");
+  if(!data||typeof data.reply!=="string"||!data.reply.trim())throw new Error("AI returned an empty response. Please retry.");
+  chat.messages.push({role:"assistant",text:data.reply.trim()});
+  renderChat();
+  await persistChat(chat);
+  setStatus("");
+ }catch(error){
+  setStatus(error instanceof TypeError?"Network error. Check your internet connection and retry.":error.message||"Something went wrong. Please retry.");
+ }finally{
+  busy=false;
+  sendBtn.disabled=false;
+ }
+}
+
+function setView(view){
+ currentView=view;
+ sidebar.classList.remove("open");
+ const titles={chat:"AI Universe Chat",history:"Chat History",youtube:"YouTube Planner",files:"File Tools",utilities:"Utilities"};
+ $("viewTitle").textContent=titles[view]||"AI Universe";
+ composerWrap.hidden=view!=="chat"&&view!=="history";
+ setStatus("");
+ messages.replaceChildren();
+ if(view==="chat"||view==="history"){renderChat();return;}
+ if(view==="youtube")renderYouTube();
+ if(view==="files")renderFiles();
+ if(view==="utilities")renderUtilities();
+}
+
+function renderYouTube(){
+ const box=document.createElement("div");
+ box.className="tool-card";
+ box.innerHTML='<h2>▶ YouTube AI Planner</h2><p class="muted">Create a video plan using the AI backend.</p><label for="ytTopic">Video topic</label><input id="ytTopic" placeholder="e.g. AI tools for beginners"><label for="ytLanguage">Language</label><select id="ytLanguage"><option>Hindi</option><option>English</option><option>Hinglish</option></select><label for="ytDuration">Video duration</label><select id="ytDuration"><option>Short (under 60 seconds)</option><option>3 minutes</option><option>5 minutes</option><option>10 minutes</option><option>15 minutes</option></select><label for="ytStyle">Video style</label><select id="ytStyle"><option>Educational</option><option>Entertainment</option><option>Tutorial</option><option>Documentary</option><option>Storytelling</option></select><button class="primary" id="ytGenerate">Generate AI plan</button>';
+ messages.appendChild(box);
+ $("ytGenerate").onclick=async()=>{
+  const topic=$("ytTopic").value.trim();
+  if(!topic){$("ytTopic").focus();return;}
+  const prompt="Create a detailed YouTube video plan. Topic: "+topic+". Language: "+$("ytLanguage").value+". Duration: "+$("ytDuration").value+". Style: "+$("ytStyle").value+". Include title ideas, hook, timed outline, script, visual suggestions, thumbnail concept and description.";
+  setView("chat");
+  await sendMessage(prompt);
+ };
+}
+
+function renderFiles(){
+ const box=document.createElement("div");
+ box.className="tool-card";
+ box.innerHTML='<h2>📎 File Tools</h2><p class="muted">Read text-based files up to 1 MB. PDF and image OCR are not enabled in this version.</p><input id="fileInput" type="file" accept=".txt,.md,.csv,.json,.html,.css,.js,.xml,.log"><div id="fileStatus" class="muted" role="status"></div><textarea id="fileContent" placeholder="File contents will appear here..." aria-label="File contents"></textarea><div class="tool-actions"><button class="secondary" id="fileSummarize">AI summarize</button><button class="secondary" id="fileExplain">AI explain</button><button class="secondary" id="fileClear">Clear</button></div>';messages.appendChild(box);
+$("fileInput").onchange=async()=>{
+const file=$("fileInput").files[0];
+$("fileContent").value="";
+if(!file)return;
+if(file.size>1024*1024){$("fileStatus").textContent="File limit is 1 MB.";return;}
+try{
+$("fileContent").value=await file.text();
+$("fileStatus").textContent="File read successfully.";
+}catch{$("fileStatus").textContent="Could not read this file.";}
+};
+$("fileClear").onclick=()=>{$("fileContent").value="";$("fileStatus").textContent="";$("fileInput").value="";};
+async function filePrompt(mode){
+const content=$("fileContent").value.trim();
+if(!content){$("fileStatus").textContent="Select a text file or enter some text first.";return;}
+if(content.length>12000){$("fileStatus").textContent="Text limit is 12,000 characters.";return;}
+const prompt=(mode==="summarize"?"Summarize this file clearly, including key points:":"Explain this file in simple language, section by section:")+"
+
+"+content;
+setView("chat");
+await sendMessage(prompt);
+}
+$("fileSummarize").onclick=()=>filePrompt("summarize");
+$("fileExplain").onclick=()=>filePrompt("explain");
+}
+
+function renderUtilities(){
+const box=document.createElement("div");
+box.className="tool-card";
+box.innerHTML='<h2>🛠 Utilities</h2><h3>Word and character counter</h3><textarea id="countText" placeholder="Enter text to count..."></textarea><p id="countResult" class="muted">Words: 0 · Characters: 0</p><h3>Text case converter</h3><textarea id="caseText" placeholder="Enter text to convert..."></textarea><div class="tool-actions"><button class="secondary" id="caseUpper">UPPERCASE</button><button class="secondary" id="caseLower">lowercase</button><button class="secondary" id="caseTitle">Title Case</button></div><textarea id="caseResult" placeholder="Converted result..." readonly></textarea><button class="secondary" id="copyResult">Copy result</button>';
+messages.appendChild(box);
+$("countText").oninput=()=>{
+const t=$("countText").value;
+const words=t.trim()?t.trim().split(/\s+/).length:0;
+$("countResult").textContent="Words: "+words+" · Characters: "+t.length;
+};
+$("caseUpper").onclick=()=>$("caseResult").value=$("caseText").value.toUpperCase();
+$("caseLower").onclick=()=>$("caseResult").value=$("caseText").value.toLowerCase();
+$("caseTitle").onclick=()=>$("caseResult").value=$("caseText").value.toLowerCase().replace(/\w/g,c=>c.toUpperCase());
+$("copyResult").onclick=async()=>{
+try{
+await navigator.clipboard.writeText($("caseResult").value);
+setStatus("Copied to clipboard.");
+}catch{setStatus("Copy not supported. Select and copy the result manually.");}
+};
+}
+
+$("chatForm").addEventListener("submit",async event=>{
+event.preventDefault();
+const text=input.value.trim();
+if(!text||busy)return;
+input.value="";
+await sendMessage(text);
 });
 
-$("menuBtn").addEventListener("click", () => {
-  sidebar.classList.toggle("open");
+$("newChatBtn").onclick=async()=>{
+if(busy)return;
+await createChat();
+setView("chat");
+};
+
+$("menuBtn").onclick=()=>sidebar.classList.toggle("open");
+document.querySelectorAll("[data-view]").forEach(btn=>btn.addEventListener("click",()=>setView(btn.dataset.view)));
+
+$("exportBtn").onclick=()=>{
+const data={version:1,exportedAt:new Date().toISOString(),chats};
+const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+const url=URL.createObjectURL(blob);
+const a=document.createElement("a");
+a.href=url;
+a.download="ai-universe-backup.json";
+a.click();
+setTimeout(()=>URL.revokeObjectURL(url),1000);
+setStatus("Chat backup exported.");
+};
+
+$("logoutBtn").onclick=async()=>{
+if(busy){setStatus("Wait for the current response before signing out.");return;}
+try{await signOut(auth);}
+catch{setStatus("Sign out failed. Please try again.");}
+};
+
+$("googleLoginBtn").onclick=async()=>{
+const button=$("googleLoginBtn");
+button.disabled=true;
+showLogin("Opening Google sign-in...");
+try{
+const provider=new GoogleAuthProvider();
+provider.setCustomParameters({prompt:"select_account"});
+await signInWithRedirect(auth,provider);
+}catch(error){
+console.error(error);
+showLogin(error.code==="auth/unauthorized-domain"?"Add this domain to Firebase Authorized domains.":"Google sign-in failed. Check Firebase configuration and connection.");
+button.disabled=false;
+}
+};
+
+async function start(){
+try{
+if(firebaseConfig.apiKey==="YOUR_FIREBASE_API_KEY"||firebaseConfig.projectId==="YOUR_PROJECT_ID"||firebaseConfig.appId==="YOUR_FIREBASE_APP_ID"){
+showLogin("Setup required: add your Firebase web-app configuration in index.html.");
+$("googleLoginBtn").disabled=true;
+return;
+}
+const app=initializeApp(firebaseConfig);
+auth=getAuth(app);
+db=getFirestore(app);
+try{await getRedirectResult(auth);}
+catch(error){
+console.error("Google redirect:",error);
+showLogin(error.code==="auth/unauthorized-domain"?"Authorize this domain in Firebase.":"Google sign-in could not be completed. Please try again.");
+}
+onAuthStateChanged(auth,async user=>{
+currentUser=user;
+if(!user){
+appShell.hidden=true;
+loginScreen.hidden=false;
+chats=[];
+activeChatId=null;
+showLogin("Sign in with Google to continue.");
+return;
+}
+loginScreen.hidden=true;
+appShell.hidden=false;
+$("accountLabel").textContent=user.email||"Google account";
+await loadChats();
 });
+}catch(error){
+console.error("Firebase initialization failed:",error);
+showLogin("Firebase setup failed. Check the web-app configuration.");
+}
+}
+start();
+</script>
 
-$("countWordsBtn").addEventListener("click", () => {
-  const text = $("utilityText").value.trim();
-  const words = text ? text.split(/\s+/).length : 0;
-  $("wordResult").textContent =
-    "Words: " + words + " | Characters: " + $("utilityText").value.length;
-});
-
-$("convertCaseBtn").addEventListener("click", () => {
-  const text = $("caseText").value;
-  const type = $("caseType").value;
-  let result = text;
-
-  if (type === "upper") result = text.toUpperCase();
-  if (type === "lower") result = text.toLowerCase();
-  if (type === "title") {
-    result = text.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-  }
-
-  $("caseResult").textContent = result;
-});
-
-$("fileInput").addEventListener("change", async () => {
-  const file = $("fileInput").files[0];
-  $("fileContent").value = "";
-  if (!file) return;
-
-  if (file.size > 1024 * 1024) {
-    $("fileStatus").textContent = "File limit is 1 MB.";
-    return;
-  }
-
-  if (file.name.toLowerCase().endsWith(".pdf")) {
-    $("fileStatus").textContent =
-      "PDF extraction needs a PDF parser. Select a text file for now.";
-    return;
-  }
-
-  try {
-    $("fileContent").value = await file.text();
-    $("fileStatus").textContent = "File read successfully.";
-  } catch {
-    $("fileStatus").textContent = "Could not read this file.";
-  }
-});
-  </script>
 </body>
 </html>
