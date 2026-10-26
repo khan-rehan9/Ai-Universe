@@ -1,1175 +1,1741 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#090b14">
-  <meta name="description" content="AI Universe — Your all-in-one AI workspace">
-  <title>AI Universe</title>
-  <style>
-    :root {
-      color-scheme: white;
-      --bg: #090b14;
-      --panel: #111522;
-      --panel2: #171c2c;
-      --border: #292f45;
-      --text: #f4f5ff;
-      --muted: #94a3b8;
-      --accent: #8b5cf6;
-      --accent2: #6d28d9;
-      --danger: #ef4444;
-      --success: #10b981;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      min-height: 100dvh;
-      overflow-x: hidden;
-    }
-
-    /* Login Screen */
-    #loginScreen {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      min-height: 100dvh;
-      padding: 20px;
-    }
-
-    .login-card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 32px 24px;
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-    }
-
-    .logo {
-      font-size: 32px;
-      font-weight: 850;
-      letter-spacing: -1px;
-      margin-bottom: 8px;
-    }
-
-    .logo span {
-      color: var(--accent);
-    }
-
-    .subtitle {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.5;
-      margin-bottom: 24px;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      padding: 13px 18px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 0.2s ease;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff;
-    }
-
-    .btn-primary:active {
-      transform: scale(0.98);
-      opacity: 0.9;
-    }
-
-    .btn-secondary {
-      background: var(--panel2);
-      border-color: var(--border);
-      color: var(--text);
-    }
-
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .status-msg {
-      margin-top: 14px;
-      font-size: 13px;
-      color: var(--muted);
-      word-break: break-word;
-    }
-
-    .status-msg.error {
-      color: var(--danger);
-    }
-
-    /* Main App Layout */
-    #appShell {
-      display: flex;
-      min-height: 100vh;
-      min-height: 100dvh;
-      position: relative;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    /* Sidebar Drawer */
-    #sidebar {
-      width: 270px;
-      background: var(--panel);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-      height: 100vh;
-      height: 100dvh;
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      transition: transform 0.25s ease;
-    }
-
-    .sidebar-header {
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .sidebar-nav {
-      padding: 12px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .nav-btn {
-      width: 100%;
-      padding: 10px 14px;
-      background: transparent;
-      border: 1px solid transparent;
-      border-radius: 10px;
-      color: var(--text);
-      font-size: 14px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      text-align: left;
-    }
-
-    .nav-btn:hover, .nav-btn.active {
-      background: var(--panel2);
-      border-color: var(--border);
-      color: var(--accent);
-    }
-
-    .history-header {
-      padding: 14px 16px 6px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
-
-    #historyContainer {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .history-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 9px 12px;
-      border-radius: 8px;
-      background: transparent;
-      border: 1px solid transparent;
-      color: var(--text);
-      font-size: 13px;
-      cursor: pointer;
-    }
-
-    .history-item:hover, .history-item.active {
-      background: var(--panel2);
-    }
-
-    .history-item span {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      flex: 1;
-    }
-
-    .history-item .del-btn {
-      color: var(--muted);
-      font-size: 14px;
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-
-    .history-item .del-btn:hover {
-      color: var(--danger);
-    }
-
-    .sidebar-footer {
-      padding: 14px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .user-info {
-      font-size: 12px;
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* Main Content Area */
-    #mainContent {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      height: 100vh;
-      height: 100dvh;
-    }
-
-    .topbar {
-      height: 56px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      background: var(--bg);
-      flex-shrink: 0;
-    }
-
-    .topbar-title {
-      font-size: 16px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .icon-btn {
-      background: transparent;
-      border: none;
-      color: var(--text);
-      font-size: 20px;
-      cursor: pointer;
-      padding: 6px;
-      display: none;
-    }
-
-    .view-container {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      max-width: 860px;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    /* Chat Messages */
-    #messageList {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      padding-bottom: 20px;
-    }
-
-    .welcome-card {
-      text-align: center;
-      padding: 40px 16px;
-      margin: auto 0;
-    }
-
-    .welcome-card h2 {
-      font-size: 24px;
-      margin-bottom: 8px;
-    }
-
-    .welcome-card p {
-      color: var(--muted);
-      font-size: 14px;
-      max-width: 440px;
-      margin: 0 auto 20px;
-    }
-
-    .quick-prompts {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .quick-chip {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-size: 13px;
-      cursor: pointer;
-    }
-
-    .message {
-      display: flex;
-      flex-direction: column;
-      max-width: 85%;
-      gap: 4px;
-    }
-
-    .message.user {
-      align-self: flex-end;
-    }
-
-    .message.assistant {
-      align-self: flex-start;
-    }
-
-    .bubble {
-      padding: 12px 16px;
-      border-radius: 16px;
-      font-size: 14px;
-      line-height: 1.6;
-      word-break: break-word;
-      white-space: pre-wrap;
-    }
-
-    .message.user .bubble {
-      background: var(--accent);
-      color: #fff;
-      border-bottom-right-radius: 4px;
-    }
-
-    .message.assistant .bubble {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-bottom-left-radius: 4px;
-    }
-
-    /* Composer */
-    .composer-area {
-      padding: 12px 16px;
-      background: var(--bg);
-      border-top: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-
-    .composer-form {
-      display: flex;
-      gap: 8px;
-      align-items: flex-end;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 8px 12px;
-      max-width: 860px;
-      margin: 0 auto;
-    }
-
-    .composer-form textarea {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: var(--text);
-      font-size: 14px;
-      line-height: 1.4;
-      resize: none;
-      max-height: 140px;
-      outline: none;
-      padding: 4px 0;
-    }
-
-    .send-btn {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-
-    /* Utility Cards (YouTube, File, Utilities) */
-    .tool-card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      margin-bottom: 16px;
-    }
-
-    .tool-card h3 {
-      font-size: 18px;
-    }
-
-    .tool-card p {
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .tool-card label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .tool-card input, .tool-card select, .tool-card textarea {
-      background: var(--panel2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-      padding: 10px 14px;
-      font-size: 14px;
-      width: 100%;
-      outline: none;
-    }
-
-    .tool-card textarea {
-      min-height: 90px;
-      resize: vertical;
-    }
-
-    .tools-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .tools-grid button {
-      flex: 1;
-      min-width: 120px;
-    }
-
-    /* Mobile Responsive */
-    @media (max-width: 768px) {
-      .icon-btn {
-        display: block;
-      }
-
-      #sidebar {
-        position: fixed;
-        left: -280px;
-        top: 0;
-        bottom: 0;
-      }
-
-      #sidebar.open {
-        transform: translateX(280px);
-      }
-
-      .sidebar-backdrop {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.6);
-        z-index: 35;
-        display: none;
-      }
-
-      .sidebar-backdrop.active {
-        display: block;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="AI Universe — Your all-in-one AI workspace for chat, images, video, audio, documents and creativity.">
+<title>AI Universe — Your AI Workspace</title>
+
+<style>
+:root {
+  --bg: #ffffff;
+  --surface: #f8f9fc;
+  --surface-hover: #f0f2f7;
+  --text: #202124;
+  --muted: #777d8a;
+  --border: #e8eaf0;
+  --accent: #6558e8;
+  --accent2: #8c65ef;
+  --shadow: 0 12px 40px rgba(25, 30, 60, .07);
+  --sidebar-width: 264px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+body { overflow: hidden; }
+button, textarea, input { font: inherit; }
+button { cursor: pointer; }
+button:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+button:disabled { cursor: not-allowed; opacity: .5; }
+
+.app {
+  display: flex;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  background: #fafbfe;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 14px 14px;
+  transition: transform .25s ease;
+  z-index: 20;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 2px 8px 23px;
+}
+
+.brand-logo {
+  width: 39px;
+  height: 39px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  color: white;
+  background: linear-gradient(135deg, #7066f0, #a65de8);
+  box-shadow: 0 5px 16px #7865e638;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.brand-name {
+  font-size: 18px;
+  font-weight: 780;
+  letter-spacing: -.65px;
+}
+
+.brand-name span { color: var(--accent); }
+
+.brand-sub {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 3px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.new-chat {
+  width: 100%;
+  border: 1px solid #e6e2ff;
+  background: #f0eeff;
+  color: #5144ce;
+  padding: 12px 13px;
+  border-radius: 13px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 650;
+  transition: .2s;
+}
+
+.new-chat:hover { background: #e7e2ff; }
+
+.side-label {
+  margin: 25px 10px 10px;
+  color: #9a9eaa;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1.25px;
+  text-transform: uppercase;
+}
+
+.nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #5f6471;
+  font-size: 12.5px;
+  text-align: left;
+  transition: .18s;
+}
+
+.nav-item:hover { background: var(--surface-hover); color: var(--text); }
+.nav-item.active { background: #eeecff; color: #5548d2; font-weight: 650; }
+
+.nav-icon {
+  width: 20px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.nav-item .nav-tag {
+  margin-left: auto;
+  color: #8c65e8;
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.history-wrap {
+  flex: 1;
+  min-height: 50px;
+  overflow-y: auto;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.history-item {
+  padding: 10px;
+  border: 0;
+  background: transparent;
+  border-radius: 9px;
+  color: #737887;
+  text-align: left;
+  font-size: 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.history-item:hover { background: var(--surface-hover); }
+
+.sidebar-bottom {
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 6px 4px;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #dcd8ff, #f2dafa);
+  color: #5b48be;
+  font-weight: 750;
+  font-size: 13px;
+}
+
+.account-info { min-width: 0; flex: 1; }
+.account-name { font-size: 12px; font-weight: 650; }
+.account-status { font-size: 10px; color: var(--muted); margin-top: 3px; }
+
+/* MAIN LAYOUT */
+
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(235,232,255,.24), transparent 48%),
+    #fff;
+}
+
+.topbar {
+  height: 66px;
+  min-height: 66px;
+  padding: 0 25px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  border-bottom: 1px solid rgba(232,234,240,.8);
+}
+
+.topbar-left, .topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 37px;
+  height: 37px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  background: transparent;
+  color: #6b7080;
+  font-size: 18px;
+}
+
+.icon-btn:hover { background: var(--surface-hover); }
+
+.mobile-menu { display: none; }
+
+.workspace-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -.2px;
+}
+
+.workspace-label small {
+  display: block;
+  font-size: 10px;
+  font-weight: 450;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #e5f2e9;
+  background: #f3faf5;
+  color: #358653;
+  padding: 6px 10px;
+  border-radius: 30px;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #36b56a;
+}
+
+/* CHAT AREA */
+
+.chat-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.chat-container {
+  max-width: 870px;
+  width: 100%;
+  min-height: 100%;
+  margin: 0 auto;
+  padding: 36px 30px 25px;
+  display: flex;
+  flex-direction: column;
+}
+
+.welcome {
+  margin: auto 0 30px;
+  padding-top: 25px;
+  text-align: center;
+}
+
+.welcome-mark {
+  width: 66px;
+  height: 66px;
+  margin: 0 auto 23px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  font-size: 31px;
+  color: white;
+  background: linear-gradient(135deg, #7268f2, #ad70e9);
+  box-shadow: 0 12px 32px #7768ef30;
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.welcome h1 {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 43px);
+  line-height: 1.2;
+  font-weight: 780;
+  letter-spacing: -1.7px;
+}
+
+.gradient-text {
+  background: linear-gradient(95deg, #6459e8, #a35cdb);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.welcome p {
+  max-width: 440px;
+  margin: 14px auto 0;
+  color: #838797;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.suggestions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  max-width: 650px;
+  width: 100%;
+  margin: 0 auto 20px;
+}
+
+.suggestion {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+  padding: 16px;
+  min-height: 91px;
+  border: 1px solid #e9eaf1;
+  border-radius: 15px;
+  background: rgba(255,255,255,.92);
+  transition: transform .2s, border-color .2s, box-shadow .2s;
+}
+
+.suggestion:hover {
+  transform: translateY(-2px);
+  border-color: #d5cffd;
+  box-shadow: 0 7px 23px rgba(61,50,130,.06);
+}
+
+.suggestion-icon {
+  display: grid;
+  place-items: center;
+  width: 37px;
+  height: 37px;
+  flex-shrink: 0;
+  border-radius: 11px;
+  background: #f0eeff;
+  font-size: 18px;
+}
+
+.suggestion:nth-child(2) .suggestion-icon { background: #eaf6ff; }
+.suggestion:nth-child(3) .suggestion-icon { background: #fff2e8; }
+.suggestion:nth-child(4) .suggestion-icon { background: #eaf8ef; }
+
+.suggestion strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  margin: 2px 0 6px;
+}
+
+.suggestion span {
+  display: block;
+  color: #8a8e9c;
+  font-size: 10.5px;
+  line-height: 1.5;
+}
+
+/* MESSAGES */
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 8px 0 25px;
+}
+
+.message {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  animation: appear .22s ease;
+}
+
+@keyframes appear {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.message.user { justify-content: flex-end; }
+
+.message-avatar {
+  display: grid;
+  place-items: center;
+  width: 31px;
+  height: 31px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: #eeecff;
+  color: #6456dc;
+  font-size: 15px;
+}
+
+.message-content {
+  min-width: 0;
+  max-width: calc(100% - 45px);
+  font-size: 13px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.message.user .message-content {
+  background: #f1efff;
+  padding: 11px 15px;
+  border-radius: 17px 17px 5px 17px;
+  max-width: 82%;
+}
+
+.message.assistant .message-content { padding-top: 2px; }
+
+.message-content pre {
+  overflow-x: auto;
+  padding: 14px;
+  background: #f5f6fa;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.message-content code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 12px;
+}
+
+.message-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.message-action {
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #858999;
+  font-size: 10px;
+  padding: 5px 8px;
+}
+
+.message-action:hover { background: #f0f1f6; }
+
+.typing {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.typing i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #9588e9;
+  animation: bounce .9s infinite alternate;
+}
+
+.typing i:nth-child(2) { animation-delay: .2s; }
+.typing i:nth-child(3) { animation-delay: .4s; }
+
+@keyframes bounce {
+  to { opacity: .3; transform: translateY(-4px); }
+}
+
+/* COMPOSER */
+
+.composer-area {
+  width: 100%;
+  max-width: 790px;
+  margin: 0 auto;
+  padding: 0 24px 12px;
+}
+
+.composer {
+  position: relative;
+  border: 1px solid #e2e4ed;
+  border-radius: 21px;
+  background: #fff;
+  box-shadow: 0 6px 28px rgba(31,34,65,.065);
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.composer:focus-within {
+  border-color: #c9c2ff;
+  box-shadow: 0 7px 30px rgba(93,78,207,.09);
+}
+
+.composer textarea {
+  display: block;
+  width: 100%;
+  min-height: 57px;
+  max-height: 180px;
+  resize: none;
+  border: 0;
+  outline: none;
+  background: transparent;
+  padding: 19px 19px 8px;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.composer textarea::placeholder { color: #a0a3af; }
+
+.composer-toolbar {
+  min-height: 53px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px 9px;
+}
+
+.tool-button {
+  min-height: 33px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: #777c8b;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.tool-button:hover { background: #f4f3ff; color: #6558d9; }
+.tool-button .tool-symbol { font-size: 15px; }
+
+.toolbar-spacer { flex: 1; }
+
+.model-select {
+  max-width: 150px;
+  border: 1px solid #ececf3;
+  background: #fafaff;
+  color: #686b7a;
+  padding: 8px 9px;
+  border-radius: 10px;
+  font-size: 10px;
+  outline: none;
+}
+
+.send-button {
+  width: 37px;
+  height: 37px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #7166ef, #8e61e8);
+  color: #fff;
+  font-size: 18px;
+  box-shadow: 0 4px 12px #7766e638;
+  transition: transform .15s;
+}
+
+.send-button:hover { transform: scale(1.04); }
+
+.disclaimer {
+  text-align: center;
+  font-size: 9px;
+  color: #a0a2ad;
+  padding: 10px 5px 0;
+  line-height: 1.6;
+}
+
+/* ATTACHMENT PREVIEW AND TOOL MENU */
+
+.attachment-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 13px 10px;
+}
+
+.attachment-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border);
+  background: #f8f8fc;
+  padding: 7px 9px;
+  border-radius: 9px;
+  color: #626676;
+  font-size: 10px;
+  max-width: 100%;
+}
+
+.attachment-chip button {
+  border: 0;
+  background: transparent;
+  color: #8b8d99;
+}
+
+.tool-menu {
+  position: absolute;
+  bottom: 58px;
+  left: 10px;
+  width: 225px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 7px;
+  z-index: 30;
+}
+
+.tool-menu[hidden], [hidden] { display: none !important; }
+
+.tool-menu button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px;
+  border: 0;
+  border-radius: 9px;
+  background: white;
+  text-align: left;
+  color: #424655;
+  font-size: 12px;
+}
+
+.tool-menu button:hover { background: #f5f3ff; }
+
+.tool-menu small {
+  display: block;
+  margin-top: 3px;
+  font-size: 10px;
+  color: #9093a0;
+}
+
+.file-input { display: none; }
+
+.toast {
+  position: fixed;
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  max-width: calc(100% - 30px);
+  background: #252535;
+  color: white;
+  border-radius: 11px;
+  padding: 12px 17px;
+  box-shadow: var(--shadow);
+  font-size: 12px;
+  text-align: center;
+}
+
+.toast[hidden] { display: none; }
+
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #10102045;
+  z-index: 15;
+}
+
+/* RESPONSIVE */
+
+@media (min-width: 1200px) {
+  .chat-container { padding-top: 45px; }
+}
+
+@media (max-width: 760px) {
+  :root { --sidebar-width: 275px; }
+
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    height: 100dvh;
+    transform: translateX(-105%);
+    box-shadow: none;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: 10px 0 45px #1c1c3020;
+  }
+
+  .overlay.show { display: block; }
+  .mobile-menu { display: grid; }
+  .topbar { padding: 0 12px; height: 59px; min-height: 59px; }
+  .topbar-left, .topbar-right { gap: 5px; }
+  .status-pill { padding: 6px 8px; }
+  .chat-container { padding: 20px 16px 15px; }
+  .welcome { padding-top: 15px; margin-bottom: 24px; }
+  .welcome-mark { width: 56px; height: 56px; border-radius: 18px; font-size: 26px; margin-bottom: 19px; }
+  .welcome h1 { letter-spacing: -1px; }
+  .welcome p { font-size: 12px; padding: 0 12px; }
+  .suggestions { gap: 9px; }
+  .suggestion { padding: 12px 10px; min-height: 88px; gap: 8px; }
+  .suggestion-icon { width: 30px; height: 30px; font-size: 15px; }
+  .suggestion strong { font-size: 11px; }
+  .suggestion span { font-size: 10px; }
+  .composer-area { padding: 0 10px 8px; }
+  .composer { border-radius: 17px; }
+  .composer textarea { padding: 15px 14px 7px; }
+  .composer-toolbar { padding: 4px 7px 7px; gap: 2px; }
+  .tool-button { padding: 0 8px; }
+  .tool-button .tool-label { display: none; }
+  .model-select { max-width: 120px; font-size: 9px; }
+  .disclaimer { font-size: 8px; padding-top: 7px; }
+}
+
+@media (max-width: 380px) {
+  .suggestions { grid-template-columns: 1fr; }
+  .suggestion { min-height: auto; }
+  .workspace-label { font-size: 12px; }
+  .status-pill { font-size: 9px; }
+  .model-select { max-width: 100px; }
+}
+</style>
 </head>
+
 <body>
+<div class="app">
 
-  <!-- 1. Google Login Screen -->
-  <div id="loginScreen">
-    <div class="login-card">
-      <div class="logo">AI <span>Universe</span></div>
-      <p class="subtitle">Your unified AI workspace. Sign in to sync your conversation history across all devices securely.</p>
-      <button class="btn btn-primary" id="googleLoginBtn">
-        <svg width="18" height="18" viewBox="0 0 24 24">
-          <path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-          <path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-          <path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-          <path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-        </svg>
-        Continue with Google
-      </button>
-      <div class="status-msg" id="loginStatus"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-logo">✳</div>
+      <div>
+        <div class="brand-name">AI <span>Universe</span></div>
+        <div class="brand-sub">One space. Infinite ideas.</div>
+      </div>
     </div>
-  </div>
 
-  <!-- 2. Main App Shell -->
-  <div id="appShell" class="hidden">
-    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+    <button class="new-chat" id="newChatBtn">
+      <span>＋</span> New conversation
+      <span style="margin-left:auto">⌘ K</span>
+    </button>
 
-    <!-- Sidebar Drawer -->
-    <aside id="sidebar">
-      <div class="sidebar-header">
-        <div class="logo" style="font-size:20px;">AI <span>Universe</span></div>
-        <button class="icon-btn" id="closeSidebarBtn" style="display:block;">&times;</button>
+    <div class="side-label">Workspace</div>
+    <nav class="nav-list">
+      <button class="nav-item active" data-tool="chat">
+        <span class="nav-icon">◉</span> AI Chat
+      </button>
+      <button class="nav-item" data-tool="image">
+        <span class="nav-icon">▧</span> Image Studio
+        <span class="nav-tag">CREATE</span>
+      </button>
+      <button class="nav-item" data-tool="video">
+        <span class="nav-icon">▷</span> Video Studio
+        <span class="nav-tag">CREATE</span>
+      </button>
+      <button class="nav-item" data-tool="audio">
+        <span class="nav-icon">♫</span> Audio Studio
+      </button>
+      <button class="nav-item" data-tool="files">
+        <span class="nav-icon">▤</span> Files & Documents
+      </button>
+      <button class="nav-item" data-tool="research">
+        <span class="nav-icon">⌕</span> Research & Web
+      </button>
+      <button class="nav-item" data-tool="writing">
+        <span class="nav-icon">✎</span> Writing & Coding
+      </button>
+    </nav>
+
+    <div class="side-label">Recent conversations</div>
+    <div class="history-wrap">
+      <div class="history-list" id="historyList">
+        <div style="padding:10px;color:#a0a2ad;font-size:11px">
+          Your conversations will appear here.
+        </div>
       </div>
+    </div>
 
-      <div class="sidebar-nav">
-        <button class="btn btn-primary" id="newChatBtn" style="justify-content: flex-start; gap: 8px;">
-          <span>+</span> New Chat
-        </button>
-        <button class="nav-btn active" data-view="chatView">💬 AI Chat</button>
-        <button class="nav-btn" data-view="youtubeView">🎬 YouTube Planner</button>
-        <button class="nav-btn" data-view="filesView">📁 File Assistant</button>
-        <button class="nav-btn" data-view="utilitiesView">🛠️ Text Utilities</button>
+    <div class="sidebar-bottom">
+      <button class="nav-item" id="settingsBtn">
+        <span class="nav-icon">⚙</span> Settings
+      </button>
+      <div class="account">
+        <div class="avatar" id="userAvatar">AI</div>
+        <div class="account-info">
+          <div class="account-name" id="userName">AI Universe User</div>
+          <div class="account-status" id="authStatus">Workspace</div>
+        </div>
+        <button class="icon-btn" id="accountBtn"
+          aria-label="Account options">⋯</button>
       </div>
+    </div>
+  </aside>
 
-      <div class="history-header">Recent Chats</div>
-      <div id="historyContainer"></div>
+  <div class="overlay" id="sidebarOverlay"></div>
 
-      <div class="sidebar-footer">
-        <div class="user-info" id="userEmailDisplay">Loading...</div>
-        <button class="btn btn-secondary" id="logoutBtn" style="padding:8px 12px; font-size:13px;">Sign Out</button>
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="icon-btn mobile-menu" id="menuBtn"
+          aria-label="Open navigation">☰</button>
+        <div class="workspace-label">
+          <span id="pageTitle">AI Chat</span>
+          <small id="pageSubtitle">Your intelligent creative workspace</small>
+        </div>
       </div>
-    </aside>
-
-    <!-- Main Workspace -->
-    <main id="mainContent">
-      <div class="topbar">
-        <button class="icon-btn" id="openSidebarBtn">&#9776;</button>
-        <div class="topbar-title" id="activeViewTitle">AI Chat</div>
-        <div style="width:24px;"></div>
+      <div class="topbar-right">
+        <span class="status-pill">
+          <span class="status-dot"></span>
+          <span id="connectionLabel">Ready to help</span>
+        </span>
+        <button class="icon-btn" id="themeBtn"
+          aria-label="Toggle theme" title="Toggle theme">☼</button>
       </div>
+    </header>
 
-      <!-- VIEW 1: AI Chat -->
-      <section id="chatView" class="view-container">
-        <div id="messageList">
-          <div class="welcome-card" id="welcomeCard">
-            <h2>Welcome to AI Universe</h2>
-            <p>Your unified assistant powered by Gemini. Ask any question, write code, or create content.</p>
-            <div class="quick-prompts">
-              <button class="quick-chip" data-prompt="Explain quantum computing in simple terms.">Explain quantum computing</button>
-              <button class="quick-chip" data-prompt="Write a complete Python script to scrape a website.">Python scraper</button>
-              <button class="quick-chip" data-prompt="Generate a 5-step growth plan for my YouTube channel.">YouTube growth plan</button>
+    <section class="chat-scroll" id="chatScroll">
+      <div class="chat-container">
+        <div class="welcome" id="welcome">
+          <div class="welcome-mark">✳</div>
+          <h1>What can we <span class="gradient-text">create today?</span></h1>
+          <p>
+            Think, write, learn, code and create. One intelligent workspace
+            for your ideas, files and everyday tasks.
+          </p>
+        </div>
+
+        <div class="suggestions" id="suggestions">
+          <button class="suggestion"
+            data-prompt="Help me understand a topic step by step, with simple examples.">
+            <div class="suggestion-icon">✦</div>
+            <div>
+              <strong>Learn something new</strong>
+              <span>Clear explanations, examples and useful insights</span>
             </div>
-          </div>
-        </div>
+          </button>
 
-        <div class="composer-area">
-          <form class="composer-form" id="chatForm">
-            <textarea id="promptInput" rows="1" placeholder="Ask AI Universe anything..."></textarea>
-            <button type="submit" class="send-btn" id="sendBtn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="22" y1="2" x2="11" y2="13"></line>
-                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-              </svg>
-            </button>
-          </form>
-          <div class="status-msg" id="chatStatus" style="text-align:center; font-size:12px;"></div>
-        </div>
-      </section>
-
-      <!-- VIEW 2: YouTube Planner -->
-      <section id="youtubeView" class="view-container hidden">
-        <div class="tool-card">
-          <h3>🎬 YouTube Video AI Planner</h3>
-          <p>Generate a complete scene-by-scene script and title outline directly into your chat.</p>
-          <div>
-            <label>Video Topic</label>
-            <input type="text" id="ytTopic" placeholder="e.g. History of Artificial Intelligence">
-          </div>
-          <div style="display:flex; gap:10px;">
-            <div style="flex:1;">
-              <label>Language</label>
-              <select id="ytLanguage">
-                <option value="Hinglish">Hinglish</option>
-                <option value="Hindi">Hindi</option>
-                <option value="English">English</option>
-                <option value="Urdu">Urdu</option>
-              </select>
+          <button class="suggestion"
+            data-prompt="Help me write a professional, polished piece of content.">
+            <div class="suggestion-icon">✎</div>
+            <div>
+              <strong>Write anything</strong>
+              <span>Ideas, emails, stories and professional content</span>
             </div>
-            <div style="flex:1;">
-              <label>Target Duration</label>
-              <select id="ytDuration">
-                <option value="Shorts (under 60s)">Shorts (under 60s)</option>
-                <option value="3-5 Minutes">3-5 Minutes</option>
-                <option value="10 Minutes">10 Minutes</option>
-                <option value="20+ Minutes">20+ Minutes</option>
-              </select>
+          </button>
+
+          <button class="suggestion"
+            data-prompt="Help me debug my code and explain the solution.">
+            <div class="suggestion-icon">⌘</div>
+            <div>
+              <strong>Build with code</strong>
+              <span>Debug, develop and understand your projects</span>
             </div>
-          </div>
-          <div>
-            <label>Video Style</label>
-            <select id="ytStyle">
-              <option value="Faceless Documentary">Faceless Documentary</option>
-              <option value="Educational / Tutorial">Educational / Tutorial</option>
-              <option value="Storytelling & Thriller">Storytelling & Thriller</option>
-              <option value="Motivational">Motivational</option>
-            </select>
-          </div>
-          <button class="btn btn-primary" id="ytGenerateBtn">Generate Video Script Plan</button>
+          </button>
+
+          <button class="suggestion"
+            data-prompt="Help me plan a creative project and suggest the best next steps.">
+            <div class="suggestion-icon">✧</div>
+            <div>
+              <strong>Explore an idea</strong>
+              <span>Plan projects and turn ideas into action</span>
+            </div>
+          </button>
         </div>
-      </section>
 
-      <!-- VIEW 3: File Assistant -->
-      <section id="filesView" class="view-container hidden">
-        <div class="tool-card">
-          <h3>📁 File Assistant</h3>
-          <p>Upload text-based files (.txt, .md, .csv, .json up to 1 MB) to summarize, analyze, or explain with AI.</p>
-          <input type="file" id="fileUploadInput" accept=".txt,.md,.csv,.json">
-          <textarea id="filePreviewArea" placeholder="File content will appear here..." readonly></textarea>
-          <div class="tools-grid">
-            <button class="btn btn-primary" id="fileSummarizeBtn">Summarize File</button>
-            <button class="btn btn-secondary" id="fileExplainBtn">Explain Code/Data</button>
-          </div>
-          <div class="status-msg" id="fileStatus"></div>
+        <div class="messages" id="messages" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="composer-area">
+      <div class="composer" id="composer">
+        <textarea id="promptInput" rows="1"
+          aria-label="Message AI Universe"
+          placeholder="Ask anything, or describe what you want to create..."></textarea>
+
+        <div class="attachment-preview" id="attachmentPreview" hidden></div>
+
+        <div class="tool-menu" id="toolMenu" hidden>
+          <button data-attach="file">
+            <span>📎</span>
+            <span>Upload a file
+              <small>Documents and other files</small>
+            </span>
+          </button>
+          <button data-attach="image">
+            <span>🖼️</span>
+            <span>Upload an image
+              <small>Ask questions about your image</small>
+            </span>
+          </button>
+          <button data-attach="audio">
+            <span>🎧</span>
+            <span>Upload audio
+              <small>Audio analysis, when supported</small>
+            </span>
+          </button>
+          <button data-attach="video">
+            <span>🎬</span>
+            <span>Upload video
+              <small>Video analysis, when supported</small>
+            </span>
+          </button>
         </div>
-      </section>
 
-      <!-- VIEW 4: Text Utilities -->
-      <section id="utilitiesView" class="view-container hidden">
-        <div class="tool-card">
-          <h3>🛠️ Text Utilities</h3>
-          <p>Quick client-side processing tools for formatting text without using API quota.</p>
-          <textarea id="utilityText" placeholder="Paste or type text here..."></textarea>
-          <div style="font-size:13px; color:var(--muted);" id="charCountDisplay">Words: 0 | Characters: 0</div>
-          <div class="tools-grid">
-            <button class="btn btn-secondary" id="btnUpper">UPPERCASE</button>
-            <button class="btn btn-secondary" id="btnLower">lowercase</button>
-            <button class="btn btn-secondary" id="btnTitle">Title Case</button>
-            <button class="btn btn-primary" id="btnCopyText">Copy Result</button>
-          </div>
-          <div class="status-msg" id="utilityStatus"></div>
+        <div class="composer-toolbar">
+          <button class="tool-button" id="attachBtn" title="Attach a file">
+            <span class="tool-symbol">＋</span>
+            <span class="tool-label">Attach</span>
+          </button>
+          <button class="tool-button" id="imageBtn" title="Create an image">
+            <span class="tool-symbol">▧</span>
+            <span class="tool-label">Image</span>
+          </button>
+          <button class="tool-button" id="videoBtn" title="Create a video">
+            <span class="tool-symbol">▷</span>
+            <span class="tool-label">Video</span>
+          </button>
+          <button class="tool-button" id="audioBtn" title="Audio tools">
+            <span class="tool-symbol">♫</span>
+            <span class="tool-label">Audio</span>
+          </button>
+
+          <div class="toolbar-spacer"></div>
+
+          <select class="model-select" id="modelSelect"
+            aria-label="Choose AI model">
+            <option value="default">Default AI</option>
+            <option value="fast">Fast response</option>
+            <option value="reasoning">Deep reasoning</option>
+          </select>
+
+          <button class="send-button" id="sendBtn"
+            aria-label="Send message" title="Send message">↑</button>
         </div>
-      </section>
+      </div>
 
-    </main>
-  </div>
+      <input class="file-input" type="file" id="fileInput" multiple
+        accept="image/*,audio/*,video/*,.pdf,.txt,.csv,.json,.doc,.docx,.md">
 
-  <!-- Firebase Modular Scripts -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-    import {
-      getAuth,
-      GoogleAuthProvider,
-      signInWithPopup,
-      signOut,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
-    import {
-      getFirestore,
-      collection,
-      doc,
-      setDoc,
-      deleteDoc,
-      getDocs,
-      query,
-      orderBy
-    } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+      <div class="disclaimer">
+        AI can make mistakes. Verify important information.
+        Your available tools depend on your connected services.
+      </div>
+    </section>
+  </main>
+</div>
 
-    // Verified Firebase Configuration
-        const firebaseConfig = {
-      apiKey: "AIzaSyBz2h4pdzHIWcEMMJbd1EVr7zUVviWJ8q4",
-      authDomain: "ai-universe-7d50b.firebaseapp.com",
-      projectId: "ai-universe-7d50b",
-      storageBucket: "ai-universe-7d50b.firebasestorage.app",
-      messagingSenderId: "904718036677",
-      appId: "1:904718036677:web:316d06e91a264de02b4aac",
-      measurementId: "G-7CFGGW2R81"
-    };
-    
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+<div class="toast" id="toast" role="status" hidden></div>
 
-    // Global App State
-    let currentUser = null;
-    let chats = [];
-    let activeChatId = null;
-    let isThinking = false;
+  
+<script>
+(() => {
+  "use strict";
 
-    // DOM Elements
-    const loginScreen = document.getElementById('loginScreen');
-    const appShell = document.getElementById('appShell');
-    const googleLoginBtn = document.getElementById('googleLoginBtn');
-    const loginStatus = document.getElementById('loginStatus');
-    const userEmailDisplay = document.getElementById('userEmailDisplay');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const historyContainer = document.getElementById('historyContainer');
-    const newChatBtn = document.getElementById('newChatBtn');
-    const messageList = document.getElementById('messageList');
-    const welcomeCard = document.getElementById('welcomeCard');
-    const chatForm = document.getElementById('chatForm');
-    const promptInput = document.getElementById('promptInput');
-    const sendBtn = document.getElementById('sendBtn');
-    const chatStatus = document.getElementById('chatStatus');
+  // ==========================================
+  // AI UNIVERSE — PART 2: APPLICATION LOGIC
+  // ==========================================
 
-    // Sidebar & View Switcher Elements
-    const sidebar = document.getElementById('sidebar');
-    const sidebarBackdrop = document.getElementById('sidebarBackdrop');
-    const openSidebarBtn = document.getElementById('openSidebarBtn');
-    const closeSidebarBtn = document.getElementById('closeSidebarBtn');
-    const activeViewTitle = document.getElementById('activeViewTitle');
-    const navButtons = document.querySelectorAll('.nav-btn');
-    const views = {
-      chatView: document.getElementById('chatView'),
-      youtubeView: document.getElementById('youtubeView'),
-      filesView: document.getElementById('filesView'),
-      utilitiesView: document.getElementById('utilitiesView')
-    };
+  const $ = (id) => document.getElementById(id);
 
-    // Auto-resize prompt textarea
-    promptInput.addEventListener('input', () => {
-      promptInput.style.height = 'auto';
-      promptInput.style.height = Math.min(promptInput.scrollHeight, 140) + 'px';
-    });
+  const sidebar = $("sidebar");
+  const overlay = $("sidebarOverlay");
+  const chatScroll = $("chatScroll");
+  const welcome = $("welcome");
+  const suggestions = $("suggestions");
+  const messages = $("messages");
+  const promptInput = $("promptInput");
+  const sendBtn = $("sendBtn");
+  const fileInput = $("fileInput");
+  const attachmentPreview = $("attachmentPreview");
+  const toolMenu = $("toolMenu");
+  const historyList = $("historyList");
+  const toast = $("toast");
 
-    // 1. Authentication Flow
-    googleLoginBtn.addEventListener('click', async () => {
-      loginStatus.textContent = "Connecting to Google...";
-      loginStatus.className = "status-msg";
-      googleLoginBtn.disabled = true;
+  let selectedFiles = [];
+  let isSending = false;
+  let currentTool = "chat";
+  let toastTimeout;
+  let conversationHistory = [];
+  let savedChats = [];
+  let activeChatId = null;
+  let darkMode = false;
 
-      try {
-        const provider = new GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: 'select_account' });
-        await signInWithPopup(auth, provider);
-      } catch (err) {
-        console.error("Login failed:", err);
-        loginStatus.textContent = err.code === 'auth/unauthorized-domain'
-          ? "Domain unauthorized in Firebase console. Please add your domain."
-          : `Sign-in failed: ${err.message}`;
-        loginStatus.className = "status-msg error";
-        googleLoginBtn.disabled = false;
-      }
-    });
+  const TOOL_INFO = {
+    chat: {
+      title: "AI Chat",
+      subtitle: "Your intelligent creative workspace",
+      placeholder: "Ask anything, or describe what you want to create..."
+    },
+    image: {
+      title: "Image Studio",
+      subtitle: "Create images from your imagination",
+      placeholder: "Describe the image you want to create..."
+    },
+    video: {
+      title: "Video Studio",
+      subtitle: "Turn your ideas into video concepts",
+      placeholder: "Describe the video you want to create..."
+    },
+    audio: {
+      title: "Audio Studio",
+      subtitle: "Explore audio, speech and sound ideas",
+      placeholder: "Describe the audio you want to create..."
+    },
+    files: {
+      title: "Files & Documents",
+      subtitle: "Work with your documents and ideas",
+      placeholder: "Ask a question about your document..."
+    },
+    research: {
+      title: "Research & Web",
+      subtitle: "Explore questions and research topics",
+      placeholder: "What would you like to research?"
+    },
+    writing: {
+      title: "Writing & Coding",
+      subtitle: "Write, build, debug and improve",
+      placeholder: "What would you like to write or build?"
+    }
+  };
 
-    logoutBtn.addEventListener('click', async () => {
-      try {
-        await signOut(auth);
-      } catch (err) {
-        console.error("Sign-out failed:", err);
-      }
-    });
+  // Safe text-only message rendering.
+  // This intentionally does not execute HTML returned by the AI.
+  function addMessage(role, text, options = {}) {
+    const row = document.createElement("div");
+    row.className = "message " + role;
 
-    onAuthStateChanged(auth, async (user) => {
-      currentUser = user;
-      if (user) {
-        loginScreen.classList.add('hidden');
-        appShell.classList.remove('hidden');
-        userEmailDisplay.textContent = user.email || "Google User";
-        googleLoginBtn.disabled = false;
-        loginStatus.textContent = "";
-        await loadUserChats();
-      } else {
-        appShell.classList.add('hidden');
-        loginScreen.classList.remove('hidden');
-        chats = [];
-        activeChatId = null;
-        renderHistory();
-        renderMessages();
-      }
-    });
-
-    // 2. Navigation & Drawer Controls
-    function switchView(targetViewId, titleText) {
-      Object.keys(views).forEach(key => {
-        if (views[key]) views[key].classList.add('hidden');
-      });
-      if (views[targetViewId]) {
-        views[targetViewId].classList.remove('hidden');
-      }
-      activeViewTitle.textContent = titleText;
-      navButtons.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.view === targetViewId);
-      });
-      closeDrawer();
+    if (role === "assistant") {
+      const avatar = document.createElement("div");
+      avatar.className = "message-avatar";
+      avatar.textContent = "✳";
+      row.appendChild(avatar);
     }
 
-    navButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        switchView(btn.dataset.view, btn.textContent.trim());
-      });
-    });
+    const content = document.createElement("div");
+    content.className = "message-content";
+    content.textContent = String(text ?? "");
 
-    function openDrawer() {
-      sidebar.classList.add('open');
-      sidebarBackdrop.classList.add('active');
-    }
+    row.appendChild(content);
 
-    function closeDrawer() {
-      sidebar.classList.remove('open');
-      sidebarBackdrop.classList.remove('active');
-    }
+    if (role === "assistant" && !options.loading) {
+      const actions = document.createElement("div");
+      actions.className = "message-actions";
 
-    openSidebarBtn.addEventListener('click', openDrawer);
-    closeSidebarBtn.addEventListener('click', closeDrawer);
-    sidebarBackdrop.addEventListener('click', closeDrawer);
-
-    // 3. Chat Data Persistence (Firestore)
-    async function loadUserChats() {
-      if (!currentUser) return;
-      try {
-        const chatsRef = collection(db, "users", currentUser.uid, "chats");
-        const q = query(chatsRef, orderBy("updatedAt", "desc"));
-        const snapshot = await getDocs(q);
-
-        chats = [];
-        snapshot.forEach(docSnap => {
-          const data = docSnap.data();
-          chats.push({
-            id: docSnap.id,
-            title: data.title || "New Chat",
-            messages: Array.isArray(data.messages) ? data.messages : [],
-            updatedAt: data.updatedAt || Date.now()
-          });
-        });
-
-        if (chats.length > 0) {
-          activeChatId = chats[0].id;
-        } else {
-          createNewChat();
-        }
-        renderHistory();
-        renderMessages();
-      } catch (err) {
-        console.error("Failed to load chats from Firestore:", err);
-      }
-    }
-
-    async function syncActiveChatToCloud() {
-      if (!currentUser || !activeChatId) return;
-      const currentChat = chats.find(c => c.id === activeChatId);
-      if (!currentChat) return;
-
-      try {
-        const chatDocRef = doc(db, "users", currentUser.uid, "chats", activeChatId);
-        await setDoc(chatDocRef, {
-          title: currentChat.title,
-          messages: currentChat.messages,
-          updatedAt: Date.now()
-        }, { merge: true });
-      } catch (err) {
-        console.error("Failed to save chat to Firestore:", err);
-      }
-    }
-
-    function createNewChat() {
-      const newId = "chat_" + Date.now();
-      const newChat = {
-        id: newId,
-        title: "New Chat",
-        messages: [],
-        updatedAt: Date.now()
-      };
-      chats.unshift(newChat);
-      activeChatId = newId;
-      renderHistory();
-      renderMessages();
-      switchView('chatView', 'AI Chat');
-    }
-
-    newChatBtn.addEventListener('click', createNewChat);
-
-    function renderHistory() {
-      historyContainer.innerHTML = '';
-      chats.forEach(chat => {
-        const item = document.createElement('div');
-        item.className = `history-item ${chat.id === activeChatId ? 'active' : ''}`;
-        
-        const titleSpan = document.createElement('span');
-        titleSpan.textContent = chat.title;
-        titleSpan.addEventListener('click', () => {
-          activeChatId = chat.id;
-          renderHistory();
-          renderMessages();
-          switchView('chatView', 'AI Chat');
-        });
-
-        const delBtn = document.createElement('div');
-        delBtn.className = 'del-btn';
-        delBtn.innerHTML = '&times;';
-        delBtn.title = 'Delete chat';
-        delBtn.addEventListener('click', async (e) => {
-          e.stopPropagation();
-          if (confirm("Delete this conversation?")) {
-            await deleteChat(chat.id);
-          }
-        });
-
-        item.appendChild(titleSpan);
-        item.appendChild(delBtn);
-        historyContainer.appendChild(item);
-      });
-    }
-
-    async function deleteChat(id) {
-      if (currentUser) {
+      const copyBtn = document.createElement("button");
+      copyBtn.className = "message-action";
+      copyBtn.type = "button";
+      copyBtn.textContent = "Copy";
+      copyBtn.addEventListener("click", async () => {
         try {
-          await deleteDoc(doc(db, "users", currentUser.uid, "chats", id));
-        } catch (err) {
-          console.error("Delete failed:", err);
+          await navigator.clipboard.writeText(String(text ?? ""));
+          showToast("Response copied.");
+        } catch {
+          showToast("Copy is unavailable in this browser.");
         }
-      }
-      chats = chats.filter(c => c.id !== id);
-      if (activeChatId === id) {
-        activeChatId = chats.length > 0 ? chats[0].id : null;
-        if (!activeChatId) createNewChat();
-      }
-      renderHistory();
-      renderMessages();
-    }
-
-    function renderMessages() {
-      const activeChat = chats.find(c => c.id === activeChatId);
-      messageList.innerHTML = '';
-
-      if (!activeChat || activeChat.messages.length === 0) {
-        messageList.appendChild(welcomeCard);
-        return;
-      }
-
-      activeChat.messages.forEach(msg => {
-        const row = document.createElement('div');
-        row.className = `message ${msg.role === 'user' ? 'user' : 'assistant'}`;
-
-        const bubble = document.createElement('div');
-        bubble.className = 'bubble';
-        bubble.textContent = msg.text;
-
-        row.appendChild(bubble);
-        messageList.appendChild(row);
       });
 
-      messageList.scrollTop = messageList.scrollHeight;
+      actions.appendChild(copyBtn);
+      content.appendChild(actions);
     }
 
-    // Quick Prompt Chips
-    document.querySelectorAll('.quick-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        promptInput.value = chip.dataset.prompt;
-        chatForm.dispatchEvent(new Event('submit'));
+    messages.appendChild(row);
+    scrollToBottom();
+    return row;
+  }
+
+  function scrollToBottom() {
+    requestAnimationFrame(() => {
+      chatScroll.scrollTop = chatScroll.scrollHeight;
+    });
+  }
+
+  function showToast(message) {
+    toast.textContent = message;
+    toast.hidden = false;
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+      toast.hidden = true;
+    }, 3200);
+  }
+
+  function setConnection(text) {
+    $("connectionLabel").textContent = text;
+  }
+
+  function setBusy(busy) {
+    isSending = busy;
+    sendBtn.disabled = busy;
+    sendBtn.textContent = busy ? "…" : "↑";
+    promptInput.disabled = busy;
+    if (!busy) promptInput.focus();
+  }
+
+  function showWelcome(show) {
+    welcome.hidden = !show;
+    suggestions.hidden = !show;
+  }
+
+  function resetComposer() {
+    promptInput.value = "";
+    promptInput.style.height = "auto";
+    selectedFiles = [];
+    renderAttachments();
+    toolMenu.hidden = true;
+  }
+
+  // ------------------------------------------
+  // CHAT HISTORY
+  // ------------------------------------------
+
+  function makeChatId() {
+    return Date.now().toString(36) +
+      Math.random().toString(36).slice(2, 8);
+  }
+
+  function saveCurrentChat() {
+    if (!conversationHistory.length) return;
+
+    if (!activeChatId) activeChatId = makeChatId();
+
+    const firstUserMessage = conversationHistory.find(
+      item => item.role === "user"
+    );
+
+    const title = firstUserMessage
+      ? firstUserMessage.parts?.[0]?.text?.slice(0, 55) ||
+        firstUserMessage.content?.slice(0, 55) ||
+        "New conversation"
+      : "New conversation";
+
+    const chat = {
+      id: activeChatId,
+      title,
+      messages: conversationHistory.map(item => ({ ...item })),
+      updatedAt: Date.now()
+    };
+
+    const index = savedChats.findIndex(c => c.id === activeChatId);
+
+    if (index >= 0) savedChats[index] = chat;
+    else savedChats.unshift(chat);
+
+    savedChats.sort((a, b) => b.updatedAt - a.updatedAt);
+    savedChats = savedChats.slice(0, 40);
+    renderHistory();
+  }
+
+  function renderHistory() {
+    historyList.replaceChildren();
+
+    if (!savedChats.length) {
+      const empty = document.createElement("div");
+      empty.style.cssText =
+        "padding:10px;color:#a0a2ad;font-size:11px";
+      empty.textContent = "Your conversations will appear here.";
+      historyList.appendChild(empty);
+      return;
+    }
+
+    savedChats.forEach(chat => {
+      const button = document.createElement("button");
+      button.className = "history-item";
+      button.type = "button";
+      button.textContent = chat.title;
+      button.title = chat.title;
+
+      if (chat.id === activeChatId) {
+        button.style.background = "#eeecff";
+        button.style.color = "#5548d2";
+      }
+
+      button.addEventListener("click", () => openChat(chat.id));
+      historyList.appendChild(button);
+    });
+  }
+
+  function openChat(id) {
+    const chat = savedChats.find(item => item.id === id);
+    if (!chat) return;
+
+    activeChatId = id;
+    conversationHistory = chat.messages.map(item => ({ ...item }));
+    messages.replaceChildren();
+    showWelcome(false);
+
+    conversationHistory.forEach(item => {
+      const role = item.role === "model" || item.role === "assistant"
+        ? "assistant"
+        : "user";
+
+      let text = item.content;
+
+      if (!text && Array.isArray(item.parts)) {
+        text = item.parts
+          .filter(part => typeof part.text === "string")
+          .map(part => part.text)
+          .join("\n");
+      }
+
+      if (text) addMessage(role, text);
+    });
+
+    renderHistory();
+    closeSidebar();
+  }
+
+  function newChat() {
+    if (isSending) {
+      showToast("Please wait for the current response to finish.");
+      return;
+    }
+
+    saveCurrentChat();
+    activeChatId = null;
+    conversationHistory = [];
+    messages.replaceChildren();
+    resetComposer();
+    showWelcome(true);
+    setConnection("Ready to help");
+    renderHistory();
+    closeSidebar();
+  }
+
+  // ------------------------------------------
+  // SIDEBAR AND NAVIGATION
+  // ------------------------------------------
+
+  function closeSidebar() {
+    sidebar.classList.remove("open");
+    overlay.classList.remove("show");
+  }
+
+  $("menuBtn").addEventListener("click", () => {
+    sidebar.classList.toggle("open");
+    overlay.classList.toggle(
+      "show",
+      sidebar.classList.contains("open")
+    );
+  });
+
+  overlay.addEventListener("click", closeSidebar);
+
+  $("newChatBtn").addEventListener("click", newChat);
+
+  document.addEventListener("keydown", event => {
+    if ((event.ctrlKey || event.metaKey) &&
+        event.key.toLowerCase() === "k") {
+      event.preventDefault();
+      newChat();
+    }
+
+    if (event.key === "Escape") {
+      toolMenu.hidden = true;
+      closeSidebar();
+    }
+  });
+
+  function selectTool(tool) {
+    currentTool = TOOL_INFO[tool] ? tool : "chat";
+    const info = TOOL_INFO[currentTool];
+
+    $("pageTitle").textContent = info.title;
+    $("pageSubtitle").textContent = info.subtitle;
+    promptInput.placeholder = info.placeholder;
+
+    document.querySelectorAll(".nav-item[data-tool]").forEach(button => {
+      button.classList.toggle(
+        "active",
+        button.dataset.tool === currentTool
+      );
+    });
+
+    toolMenu.hidden = true;
+    closeSidebar();
+
+    if (currentTool !== "chat") {
+      promptInput.focus();
+
+      const prompts = {
+        image: "Create an image: ",
+        video: "Help me create a video: ",
+        audio: "Help me create audio: ",
+        files: "Help me analyze a document: ",
+        research: "Research this topic: ",
+        writing: "Help me write or code: "
+      };
+
+      if (!promptInput.value.trim()) {
+        promptInput.value = prompts[currentTool] || "";
+      }
+    }
+  }
+
+  document.querySelectorAll(".nav-item[data-tool]").forEach(button => {
+    button.addEventListener("click", () => {
+      selectTool(button.dataset.tool);
+    });
+  });
+
+  document.querySelectorAll(".suggestion[data-prompt]").forEach(button => {
+    button.addEventListener("click", () => {
+      promptInput.value = button.dataset.prompt || "";
+      promptInput.focus();
+      promptInput.dispatchEvent(new Event("input"));
+    });
+  });
+
+  // ------------------------------------------
+  // ATTACHMENTS
+  // ------------------------------------------
+
+  $("attachBtn").addEventListener("click", () => {
+    toolMenu.hidden = !toolMenu.hidden;
+  });
+
+  document.querySelectorAll("[data-attach]").forEach(button => {
+    button.addEventListener("click", () => {
+      const kind = button.dataset.attach;
+      toolMenu.hidden = true;
+
+      const accept = {
+        file: "",
+        image: "image/*",
+        audio: "audio/*",
+        video: "video/*"
+      };
+
+      fileInput.accept = accept[kind] ?? "";
+      fileInput.click();
+    });
+  });
+
+  fileInput.addEventListener("change", () => {
+    const incoming = Array.from(fileInput.files || []);
+    const maxFileSize = 15 * 1024 * 1024;
+    const maxFiles = 5;
+
+    for (const file of incoming) {
+      if (selectedFiles.length >= maxFiles) {
+        showToast("You can select up to 5 files at a time.");
+        break;
+      }
+
+      if (file.size > maxFileSize) {
+        showToast(file.name + " is larger than the 15 MB preview limit.");
+        continue;
+      }
+
+      const duplicate = selectedFiles.some(
+        existing => existing.name === file.name &&
+          existing.size === file.size &&
+          existing.lastModified === file.lastModified
+      );
+
+      if (!duplicate) selectedFiles.push(file);
+    }
+
+    renderAttachments();
+    fileInput.value = "";
+  });
+
+  function renderAttachments() {
+    attachmentPreview.replaceChildren();
+    attachmentPreview.hidden = selectedFiles.length === 0;
+
+    selectedFiles.forEach((file, index) => {
+      const chip = document.createElement("div");
+      chip.className = "attachment-chip";
+
+      const name = document.createElement("span");
+      const icon = file.type.startsWith("image/") ? "🖼️" :
+        file.type.startsWith("audio/") ? "🎧" :
+        file.type.startsWith("video/") ? "🎬" : "📎";
+
+      name.textContent = icon + " " + file.name;
+      chip.appendChild(name);
+
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.textContent = "×";
+      remove.setAttribute("aria-label", "Remove " + file.name);
+
+      remove.addEventListener("click", () => {
+        selectedFiles.splice(index, 1);
+        renderAttachments();
       });
+
+      chip.appendChild(remove);
+      attachmentPreview.appendChild(chip);
+    });
+  }
+
+  $("imageBtn").addEventListener("click", () => selectTool("image"));
+  $("videoBtn").addEventListener("click", () => selectTool("video"));
+  $("audioBtn").addEventListener("click", () => selectTool("audio"));
+
+  // ------------------------------------------
+  // BACKEND CONNECTION
+  // ------------------------------------------
+
+  /*
+   * Expected endpoint: POST /api/chat
+   *
+   * This client sends:
+   * {
+   *   message: "...",
+   *   history: [{ role: "user"|"model", parts: [{text:"..."}] }]
+   * }
+   *
+   * Your existing Worker must accept this format, or the
+   * request body below must be adapted to match worker.js.
+   */
+
+  function extractReply(data) {
+    if (typeof data === "string") return data;
+
+    if (typeof data?.reply === "string") return data.reply;
+    if (typeof data?.response === "string") return data.response;
+    if (typeof data?.text === "string") return data.text;
+    if (typeof data?.message === "string") return data.message;
+
+    const candidate = data?.candidates?.[0];
+    if (candidate?.content?.parts) {
+      return candidate.content.parts
+        .filter(part => typeof part.text === "string")
+        .map(part => part.text)
+        .join("\n");
+    }
+
+    if (data?.result && typeof data.result === "string") {
+      return data.result;
+    }
+
+    return "";
+  }
+
+  function getErrorMessage(data, status) {
+    const apiMessage =
+      data?.error?.message ||
+      data?.error ||
+      data?.message;
+
+    if (status === 401 || status === 403) {
+      return "Access denied. Please check your authentication and API permissions.";
+    }
+
+    if (status === 404) {
+      return "The API endpoint or selected model was not found. Check your Worker route and configured Gemini model.";
+    }
+
+    if (status === 429) {
+      return "The AI service is busy or its usage limit has been reached. Please wait and try again.";
+    }
+
+    if (status >= 500) {
+      return "The AI server encountered a problem. Please try again shortly.";
+    }
+
+    if (apiMessage) return String(apiMessage);
+
+    return "Request failed (HTTP " + status + "). Please try again.";
+  }
+
+  async function requestAI(message, history) {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      credentials: "same-origin",
+      body: JSON.stringify({
+        message,
+        history
+      })
     });
 
-    // 4. Message Send Flow & API Call
-    chatForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const text = promptInput.value.trim();
-      if (!text || isThinking) return;
+    const contentType = response.headers.get("content-type") || "";
+    let data;
 
-      let activeChat = chats.find(c => c.id === activeChatId);
-      if (!activeChat) {
-        createNewChat();
-        activeChat = chats.find(c => c.id === activeChatId);
-      }
+    if (contentType.includes("application/json")) {
+      data = await response.json();
+    } else {
+      data = await response.text();
+    }
 
-      // Add user message
-      activeChat.messages.push({ role: 'user', text });
-      if (activeChat.messages.length === 1) {
-        activeChat.title = text.slice(0, 30);
-      }
+    if (!response.ok) {
+      throw new Error(getErrorMessage(data, response.status));
+    }
 
-      promptInput.value = '';
-      promptInput.style.height = 'auto';
-      renderHistory();
-      renderMessages();
+    const reply = extractReply(data);
 
-      isThinking = true;
-      sendBtn.disabled = true;
-      chatStatus.textContent = "AI Universe is thinking...";
+    if (!reply) {
+      throw new Error(
+        "The server responded, but no text reply was found. Check the response format in functions/api/chat.js."
+      );
+    }
 
-      try {
-        const token = currentUser ? await currentUser.getIdToken() : "";
-        const payload = {
-          messages: activeChat.messages.map(m => ({ role: m.role, text: m.text }))
-        };
+    return reply;
+  }
 
-        const res = await fetch('/api/chat', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-          },
-          body: JSON.stringify(payload)
-        });
+  async function sendMessage() {
+    if (isSending) return;
 
-        if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.error || `Server error (${res.status})`);
-        }
+    const userText = promptInput.value.trim();
 
-        const data = await res.json();
-        const replyText = data.reply || (data.candidates?.[0]?.content?.parts?.[0]?.text) || "No response received.";
+    if (!userText && !selectedFiles.length) {
+      promptInput.focus();
+      return;
+    }
 
-        activeChat.messages.push({ role: 'assistant', text: replyText });
-        renderMessages();
-        await syncActiveChatToCloud();
-        chatStatus.textContent = "";
-      } catch (err) {
-        console.error("AI Request Failed:", err);
-        chatStatus.textContent = `Error: ${err.message}`;
-        activeChat.messages.push({
-          role: 'assistant',
-          text: `⚠️ Could not complete request: ${err.message}`
-        });
-        renderMessages();
-      } finally {
-        isThinking = false;
-        sendBtn.disabled = false;
-      }
+    if (selectedFiles.length) {
+      showToast(
+        "Files are selected, but this chat endpoint has not been configured to upload their contents. Remove files or add backend upload support."
+      );
+
+      if (!userText) return;
+    }
+
+    if (selectedFiles.length) {
+      showToast(
+        "Sending text only. Attachments need additional backend support."
+      );
+    }
+
+    const fullMessage = currentTool === "chat"
+      ? userText
+      : "[" + TOOL_INFO[currentTool].title + "] " + userText;
+
+    saveCurrentChat();
+
+    const priorHistory = conversationHistory.map(item => ({
+      role: item.role,
+      parts: item.parts
+    }));
+
+    showWelcome(false);
+    addMessage("user", fullMessage);
+
+    conversationHistory.push({
+      role: "user",
+      parts: [{ text: fullMessage }]
     });
 
-    // 5. YouTube Planner Tool
-    const ytGenerateBtn = document.getElementById('ytGenerateBtn');
-    ytGenerateBtn.addEventListener('click', () => {
-      const topic = document.getElementById('ytTopic').value.trim();
-      if (!topic) {
-        alert("Please enter a video topic.");
-        return;
-      }
-      const lang = document.getElementById('ytLanguage').value;
-      const duration = document.getElementById('ytDuration').value;
-      const style = document.getElementById('ytStyle').value;
+    resetComposer();
+    setBusy(true);
+    setConnection("Thinking…");
 
-      const generatedPrompt = `Create a detailed YouTube production plan and script for:
-- Topic: ${topic}
-- Language: ${lang}
-- Target Duration: ${duration}
-- Style: ${style}
+    const loadingRow = document.createElement("div");
+    loadingRow.className = "message assistant";
 
-Include catchy title options, an engaging hook, a scene-by-scene visual script with narration, and thumbnail ideas.`;
+    const loadingAvatar = document.createElement("div");
+    loadingAvatar.className = "message-avatar";
+    loadingAvatar.textContent = "✳";
 
-      switchView('chatView', 'AI Chat');
-      promptInput.value = generatedPrompt;
-      chatForm.dispatchEvent(new Event('submit'));
-    });
+    const loadingContent = document.createElement("div");
+    loadingContent.className = "message-content";
 
-    // 6. File Assistant Tool
-    const fileUploadInput = document.getElementById('fileUploadInput');
-    const filePreviewArea = document.getElementById('filePreviewArea');
-    const fileSummarizeBtn = document.getElementById('fileSummarizeBtn');
-    const fileExplainBtn = document.getElementById('fileExplainBtn');
-    const fileStatus = document.getElementById('fileStatus');
-    let loadedFileContent = "";
+    const typing = document.createElement("div");
+    typing.className = "typing";
+    typing.setAttribute("aria-label", "AI is responding");
 
-    fileUploadInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
+    for (let i = 0; i < 3; i++) {
+      typing.appendChild(document.createElement("i"));
+    }
 
-      if (file.size > 1024 * 1024) {
-        fileStatus.textContent = "File exceeds maximum size limit of 1 MB.";
-        fileStatus.className = "status-msg error";
-        return;
-      }
+    loadingContent.appendChild(typing);
+    loadingRow.append(loadingAvatar, loadingContent);
+    messages.appendChild(loadingRow);
+    scrollToBottom();
 
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        loadedFileContent = event.target.result;
-        filePreviewArea.value = loadedFileContent.slice(0, 3000) + (loadedFileContent.length > 3000 ? "\n...[truncated preview]" : "");
-        fileStatus.textContent = `Loaded "${file.name}" (${(file.size / 1024).toFixed(1)} KB)`;
-        fileStatus.className = "status-msg";
-      };
-      reader.onerror = () => {
-        fileStatus.textContent = "Error reading file.";
-        fileStatus.className = "status-msg error";
-      };
-      reader.readAsText(file);
-    });
+    try {
+      const reply = await requestAI(fullMessage, priorHistory);
 
-    fileSummarizeBtn.addEventListener('click', () => {
-      if (!loadedFileContent) {
-        alert("Please upload a text file first.");
-        return;
-      }
-      const prompt = `Summarize the following file content clearly with key bullet points:\n\n${loadedFileContent.slice(0, 8000)}`;
-      switchView('chatView', 'AI Chat');
-      promptInput.value = prompt;
-      chatForm.dispatchEvent(new Event('submit'));
-    });
+      loadingRow.remove();
 
-    fileExplainBtn.addEventListener('click', () => {
-      if (!loadedFileContent) {
-        alert("Please upload a text file first.");
-        return;
-      }
-      const prompt = `Analyze and explain the following code/data step by step in simple terms:\n\n${loadedFileContent.slice(0, 8000)}`;
-      switchView('chatView', 'AI Chat');
-      promptInput.value = prompt;
-      chatForm.dispatchEvent(new Event('submit'));
-    });
+      addMessage("assistant", reply);
 
-    // 7. Text Utilities Tool
-    const utilityText = document.getElementById('utilityText');
-    const charCountDisplay = document.getElementById('charCountDisplay');
-    const utilityStatus = document.getElementById('utilityStatus');
+      conversationHistory.push({
+        role: "model",
+        parts: [{ text: reply }]
+      });
 
-    utilityText.addEventListener('input', () => {
-      const text = utilityText.value;
-      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-      charCountDisplay.textContent = `Words: ${words} | Characters: ${text.length}`;
-    });
+      saveCurrentChat();
+      setConnection("Ready to help");
+    } catch (error) {
+      loadingRow.remove();
 
-    document.getElementById('btnUpper').addEventListener('click', () => {
-      utilityText.value = utilityText.value.toUpperCase();
-    });
+      const errorMessage = error instanceof TypeError
+        ? "Could not connect to the chat API. Check whether /api/chat is deployed on the same domain and whether your Worker is running."
+        : error.message || "An unexpected error occurred.";
 
-    document.getElementById('btnLower').addEventListener('click', () => {
-      utilityText.value = utilityText.value.toLowerCase();
-    });
+      addMessage(
+        "assistant",
+        "⚠️ " + errorMessage
+      );
 
-    document.getElementById('btnTitle').addEventListener('click', () => {
-      utilityText.value = utilityText.value.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
-    });
+      // Remove the failed user turn so a retry does not
+      // duplicate it in the local conversation history.
+      conversationHistory.pop();
+      saveCurrentChat();
+      setConnection("Connection issue");
+      console.error("AI Universe chat error:", error);
+    } finally {
+      setBusy(false);
+    }
+  }
 
-    document.getElementById('btnCopyText').addEventListener('click', async () => {
-      if (!utilityText.value) return;
-      try {
-        await navigator.clipboard.writeText(utilityText.value);
-        utilityStatus.textContent = "Copied to clipboard!";
-        setTimeout(() => utilityStatus.textContent = "", 2500);
-      } catch {
-        utilityStatus.textContent = "Could not copy automatically. Please copy manually.";
-      }
-    });
+  sendBtn.addEventListener("click", sendMessage);
 
-  </script>
+  promptInput.addEventListener("keydown", event => {
+    if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
+      event.preventDefault();
+      sendMessage();
+    }
+  });
+
+  promptInput.addEventListener("input", () => {
+    promptInput.style.height = "auto";
+    promptInput.style.height =
+      Math.min(promptInput.scrollHeight, 180) + "px";
+  });
+
+  // ------------------------------------------
+  // THEME
+  // ------------------------------------------
+
+  $("themeBtn").addEventListener("click", () => {
+    darkMode = !darkMode;
+
+    if (darkMode) {
+      document.documentElement.style.setProperty("--bg", "#171821");
+      document.documentElement.style.setProperty("--surface", "#20212c");
+      document.documentElement.style.setProperty("--surface-hover", "#2b2d3a");
+      document.documentElement.style.setProperty("--text", "#f2f2f7");
+      document.documentElement.style.setProperty("--muted", "#a4a7b7");
+      document.documentElement.style.setProperty("--border", "#343542");
+
+      $("themeBtn").textContent = "☾";
+    } else {
+      document.documentElement.style.removeProperty("--bg");
+      document.documentElement.style.removeProperty("--surface");
+      document.documentElement.style.removeProperty("--surface-hover");
+      document.documentElement.style.removeProperty("--text");
+      document.documentElement.style.removeProperty("--muted");
+      document.documentElement.style.removeProperty("--border");
+
+      $("themeBtn").textContent = "☼";
+    }
+  });
+
+  // ------------------------------------------
+  // ACCOUNT AND SETTINGS
+  // ------------------------------------------
+
+  $("settingsBtn").addEventListener("click", () => {
+    showToast(
+      "Settings screen is not connected yet. Existing Firebase settings must be integrated separately."
+    );
+  });
+
+  $("accountBtn").addEventListener("click", () => {
+    showToast(
+      "Account actions depend on your existing Firebase authentication integration."
+    );
+  });
+
+  // ------------------------------------------
+  // INITIALIZE
+  // ------------------------------------------
+
+  renderHistory();
+  setConnection("Ready to help");
+
+  // No automatic API request on page load.
+  // A request is made only when the user sends a message.
+
+})();
+
+</script>
+
 </body>
 </html>
