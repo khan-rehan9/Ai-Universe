@@ -1,1224 +1,987 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#090b14">
-<meta name="description" content="AI Universe — your all-in-one AI workspace">
-<title>AI Universe</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#020617">
+  <meta name="description" content="Kids Cyber City AI Workspace">
+  <title>Kids Cyber City — AI Workspace</title>
 
-<style>
-:root {
-  color-scheme: dark;
-  --bg:#090b14;
-  --panel:#111522;
-  --panel2:#171c2c;
-  --border:#292f45;
-  --text:#f4f5ff;
-  --muted:#9ba4bd;
-  --accent:#9b7bff;
-  --accent2:#6848e8;
-  --danger:#ff8585;
-}
-* { box-sizing:border-box; }
-body {
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:Inter,system-ui,-apple-system,sans-serif;
-}
-button,input,textarea,select { font:inherit; }
-button { color:var(--text); cursor:pointer; }
-button:disabled { opacity:.55; cursor:not-allowed; }
-button:focus-visible,input:focus-visible,
-textarea:focus-visible,select:focus-visible {
-  outline:2px solid var(--accent);
-  outline-offset:2px;
-}
-[hidden] { display:none!important; }
-button,.panel,input,textarea,select { border-radius:12px; }
-#loginScreen {
-  min-height:100dvh;
-  display:grid;
-  place-items:center;
-  padding:20px;
-}
-.login-card {
-  width:100%;
-  max-width:420px;
-  padding:30px;
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:24px;
-}
-.logo {
-  font-weight:850;
-  font-size:24px;
-  letter-spacing:-.8px;
-}
-.logo span { color:#b5a1ff; }
-p,.muted { color:var(--muted); line-height:1.6; }
-.primary {
-  background:linear-gradient(120deg,var(--accent2),var(--accent));
-  border:0;
-  padding:12px 16px;
-  font-weight:650;
-}
-.secondary {
-  background:var(--panel2);
-  border:1px solid var(--border);
-  padding:10px 13px;
-}
-.full { width:100%; margin-top:12px; }
-#app { min-height:100dvh; display:flex; }
-.sidebar {
-  width:260px;
-  flex-shrink:0;
-  background:var(--panel);
-  border-right:1px solid var(--border);
-  padding:16px;
-  display:flex;
-  flex-direction:column;
-  gap:9px;
-}
-.sidebar-top {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:5px 2px 16px;
-}
-.nav,.new-chat {
-  width:100%;
-  text-align:left;
-  padding:11px 12px;
-  background:transparent;
-  border:1px solid transparent;
-}
-.nav:hover,.nav.active {
-  background:var(--panel2);
-  border-color:var(--border);
-}
-.new-chat { background:var(--accent2); font-weight:650; }
-.section-label {
-  font-size:12px;
-  color:var(--muted);
-  margin:17px 4px 4px;
-}
-.history { overflow-y:auto; max-height:35dvh; }
-.history-row { display:flex; gap:3px; align-items:center; }
-.history-open {
-  flex:1;
-  min-width:0;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  text-align:left;
-  background:transparent;
-  border:0;
-  padding:10px 5px;
-}
-.delete-chat {
-  background:transparent;
-  border:0;
-  color:var(--muted);
-  padding:8px;
-}
-.account-area {
-  margin-top:auto;
-  border-top:1px solid var(--border);
-  padding-top:12px;
-}
-.main {
-  flex:1;
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-  height:100dvh;
-}
-.topbar {
-  min-height:64px;
-  flex-shrink:0;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:0 20px;
-  border-bottom:1px solid var(--border);
-}
-.topbar h1 { font-size:16px; font-weight:650; flex:1; }
-.menu { display:none; }
-.account {
-  font-size:12px;
-  color:var(--muted);
-  max-width:160px;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-.messages {
-  flex:1;
-  overflow-y:auto;
-  width:100%;
-  padding:24px 18px;
-}
-.message-list { max-width:850px; margin:auto; }
-.welcome {
-  min-height:45vh;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
-  padding:20px;
-}
-.welcome h2 {
-  font-size:clamp(27px,5vw,42px);
-  margin:12px 0;
-}
-.welcome p { max-width:480px; }
-.quick-actions {
-  display:flex;
-  gap:8px;
-  justify-content:center;
-  flex-wrap:wrap;
-  margin-top:16px;
-}
-.message {
-  margin:14px 0;
-  padding:15px 16px;
-  border:1px solid var(--border);
-  border-radius:17px;
-  line-height:1.7;
-  overflow-wrap:anywhere;
-  white-space:pre-wrap;
-}
-.message.user {
-  background:#1a2035;
-  margin-left:clamp(0px,8%,65px);
-}
-.message.assistant {
-  background:var(--panel);
-  margin-right:clamp(0px,8%,65px);
-}
-.message-role {
-  font-size:11px;
-  color:var(--muted);
-  margin-bottom:5px;
-}
-.composer-wrap {
-  flex-shrink:0;
-  padding:12px 16px max(12px,env(safe-area-inset-bottom));
-  background:var(--bg);
-}
-.composer-box {
-  max-width:850px;
-  margin:auto;
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:20px;
-  padding:10px;
-}
-.composer { display:flex; gap:10px; align-items:flex-end; }
-.composer textarea {
-  flex:1;
-  min-width:0;
-  max-height:180px;
-  min-height:48px;
-  resize:vertical;
-  background:transparent;
-  border:0;
-  color:var(--text);
-  padding:12px;
-  outline:none;
-}
-.send {
-  width:46px;
-  height:46px;
-  border:0;
-  background:var(--accent2);
-  border-radius:14px;
-  font-size:20px;
-}
-.composer-note {
-  text-align:center;
-  font-size:11px;
-  color:var(--muted);
-  margin-top:8px;
-}
-.status {
-  max-width:850px;
-  margin:8px auto 0;
-  font-size:12px;
-  color:var(--muted);
-  overflow-wrap:anywhere;
-}
-.error { color:var(--danger)!important; }
-.tool-card {
-  max-width:850px;
-  margin:0 auto 16px;
-  padding:20px;
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:18px;
-}
-.tool-card h2 { margin-top:0; }
-.tool-card input,.tool-card textarea,.tool-card select {
-  display:block;
-  width:100%;
-  padding:12px;
-  margin:8px 0 15px;
-  background:var(--bg);
-  border:1px solid var(--border);
-  color:var(--text);
-}
-.tool-card textarea { min-height:100px; }
-.tool-actions { display:flex; flex-wrap:wrap; gap:8px; }
-.tool-actions button { flex:1; }
-.result { white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.7; }
-.small-note { font-size:12px; }
-@media(max-width:760px) {
-  .sidebar {
-    display:none;
-    position:fixed;
-    inset:0 auto 0 0;
-    z-index:10;
-    width:min(290px,86vw);
-    height:100dvh;
-    overflow-y:auto;
-    box-shadow:15px 0 40px #0009;
-  }
-  .sidebar.open { display:flex; }
-  .menu {
-    display:inline-block;
-    background:var(--panel2);
-    border:1px solid var(--border);
-    padding:8px 11px;
-  }
-  .topbar { padding:0 12px; }
-  .messages { padding:15px 10px; }
-  .composer-wrap { padding-left:8px; padding-right:8px; }
-  .account { max-width:100px; }
-}
-</style>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #020617;
+      --panel: #0b1120;
+      --surface: #0f172a;
+      --border: #253047;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --danger: #f87171;
+      --success: #4ade80;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.5 Inter, system-ui, -apple-system, sans-serif;
+    }
+
+    button, textarea { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+    .hidden { display: none !important; }
+
+    button:focus-visible, textarea:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .btn {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .btn.primary:hover { background: var(--accent-hover); }
+    .full { width: 100%; }
+
+    #auth-screen {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 430px;
+      padding: 30px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 24px 70px #0005;
+    }
+
+    .brand-mark {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 16px;
+      display: grid;
+      place-items: center;
+      background: #1d4ed833;
+      border: 1px solid #3b82f655;
+      border-radius: 18px;
+      font-size: 28px;
+    }
+
+    h1 { font-size: 25px; margin: 0; }
+    .subtitle { color: #60a5fa; margin: 6px 0 16px; }
+    .muted { color: var(--muted); }
+    .small { font-size: 12px; }
+    #auth-status, #app-status {
+      margin-top: 12px;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    #app-screen {
+      height: 100dvh;
+      min-height: 0;
+      display: flex;
+      overflow: hidden;
+    }
+
+    #sidebar {
+      width: 275px;
+      flex: 0 0 275px;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      z-index: 20;
+    }
+
+    .sidebar-header, .topbar {
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-header strong { font-size: 15px; }
+    .nav-list { padding: 12px 9px; display: grid; gap: 5px; }
+
+    .nav-item {
+      width: 100%;
+      text-align: left;
+      padding: 11px 12px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      color: var(--muted);
+      background: transparent;
+    }
+
+    .nav-item:hover { background: var(--surface); color: var(--text); }
+    .nav-item.active {
+      color: #93c5fd;
+      background: #2563eb20;
+      border-color: #2563eb40;
+    }
+
+    .section-label {
+      padding: 12px 16px 6px;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    #history-container {
+      flex: 1;
+      min-height: 80px;
+      overflow-y: auto;
+      padding: 4px 9px;
+    }
+
+    .history-item {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      gap: 8px;
+      text-align: left;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 9px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .history-item span {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .history-item:hover, .history-item.active {
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .sidebar-footer {
+      padding: 13px;
+      border-top: 1px solid var(--border);
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      min-width: 0;
+    }
+
+    #user-avatar {
+      width: 38px;
+      height: 38px;
+      flex: 0 0 38px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 50%;
+      background: #1d4ed8;
+    }
+
+    #user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-info { min-width: 0; flex: 1; }
+    .profile-info div { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #user-email { color: var(--muted); font-size: 11px; }
+
+    #main {
+      min-width: 0;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar { background: var(--panel); }
+    #active-title { font-weight: 650; }
+    .mobile-only { display: none; }
+
+    #chat-scroller {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 22px 16px;
+      scroll-behavior: smooth;
+    }
+
+    #welcome-view {
+      max-width: 750px;
+      margin: 8vh auto 30px;
+      text-align: center;
+    }
+
+    #welcome-view h2 { font-size: clamp(22px, 4vw, 30px); }
+    #welcome-view p { color: var(--muted); }
+
+    #quick-prompts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 26px;
+      text-align: left;
+    }
+
+    .prompt-card {
+      min-height: 76px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel);
+      color: var(--text);
+      text-align: left;
+    }
+
+    .prompt-card:hover { border-color: var(--accent); }
+
+    #chat-messages {
+      width: 100%;
+      max-width: 850px;
+      margin: 0 auto;
+      display: grid;
+      gap: 20px;
+    }
+
+    .chat-msg { display: flex; align-items: flex-start; gap: 10px; }
+    .chat-msg.user { flex-direction: row-reverse; }
+
+    .msg-icon {
+      width: 32px;
+      height: 32px;
+      flex: 0 0 32px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: var(--surface);
+      font-size: 11px;
+    }
+
+    .chat-bubble {
+      max-width: min(82%, 720px);
+      padding: 12px 15px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--panel);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .chat-msg.user .chat-bubble {
+      background: #1d4ed8;
+      border-color: #3b82f6;
+    }
+
+    .composer-area {
+      padding: 12px 16px max(12px, env(safe-area-inset-bottom));
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .composer-inner { max-width: 850px; margin: 0 auto; }
+    .composer-box {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      padding: 7px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--panel);
+    }
+
+    #user-prompt {
+      flex: 1;
+      min-width: 0;
+      min-height: 42px;
+      max-height: 160px;
+      resize: none;
+      padding: 10px;
+      border: 0;
+      outline: 0;
+      color: var(--text);
+      background: transparent;
+    }
+
+    #send-button {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--accent);
+      color: white;
+      font-size: 20px;
+    }
+
+    .composer-note { margin-top: 7px; text-align: center; color: var(--muted); font-size: 11px; }
+
+    @media (max-width: 760px) {
+      #sidebar {
+        position: fixed;
+        inset: 0 auto 0 0;
+        width: min(290px, 86vw);
+        transform: translateX(-105%);
+        transition: transform .2s ease;
+        box-shadow: 15px 0 40px #0005;
+      }
+
+      #sidebar.open { transform: translateX(0); }
+      .mobile-only { display: inline-flex; }
+      #quick-prompts { grid-template-columns: 1fr; }
+      #welcome-view { margin-top: 3vh; }
+      #chat-scroller { padding: 16px 12px; }
+      .chat-bubble { max-width: 88%; }
+      .composer-area { padding-inline: 10px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+    }
+  </style>
 </head>
 
 <body>
-<section id="loginScreen">
-  <div class="login-card">
-    <div class="logo">✦ AI <span>Universe</span></div>
-    <h1>Your AI workspace</h1>
-    <p>Chat, create, research, write and organize your ideas in one place.</p>
-    <button class="primary full" id="googleLogin" type="button">
-      Continue with Google
-    </button>
-    <p id="loginStatus" role="status" aria-live="polite"></p>
-    <p class="muted small-note">
-      Sign in securely with Google. AI features require a working backend.
-    </p>
-  </div>
-</section>
-
-<div id="app" hidden>
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-top">
-      <div class="logo">✦ AI <span>Universe</span></div>
-      <button class="secondary" id="closeMenu" type="button"
-        aria-label="Close menu">×</button>
+  <section id="auth-screen">
+    <div class="login-card">
+      <div class="brand-mark" aria-hidden="true">✦</div>
+      <h1>Kids Cyber City</h1>
+      <div class="subtitle">AI Universe Workspace</div>
+      <p class="muted">
+        Sign in to use AI Chat, YouTube Planner, Code Assistant and saved conversations.
+      </p>
+      <button id="google-login" class="btn primary full" type="button">
+        Continue with Google
+      </button>
+      <div id="auth-status" role="status" aria-live="polite"></div>
+      <p class="muted small">
+        Your conversations are stored in your Firebase account.
+      </p>
     </div>
+  </section>
 
-    <button class="new-chat" id="newChat" type="button">＋ New chat</button>
-    <button class="nav active" data-view="chat" type="button">◈ AI Chat</button>
-    <button class="nav" data-view="youtube" type="button">▶ YouTube planner</button>
-    <button class="nav" data-view="files" type="button">▤ File assistant</button>
-    <button class="nav" data-view="utilities" type="button">⌘ Text utilities</button>
-    <button class="nav" id="exportChats" type="button">↓ Export chat backup</button>
-
-    <div class="section-label">YOUR CONVERSATIONS</div>
-    <div class="history" id="history"></div>
-
-    <div class="account-area">
-      <div class="section-label" id="accountLabel">Account</div>
-      <button class="nav" id="logout" type="button">↪ Sign out</button>
-    </div>
-  </aside>
-
-  <main class="main">
-    <header class="topbar">
-      <button class="menu" id="menu" type="button"
-        aria-label="Open menu">☰</button>
-      <h1 id="viewTitle">AI Universe</h1>
-      <span class="account" id="userEmail"></span>
-    </header>
-
-    <section class="messages" id="messages" aria-live="polite">
-      <div class="message-list" id="messageList"></div>
-    </section>
-
-    <div class="composer-wrap" id="composerWrap">
-      <div class="composer-box">
-        <form class="composer" id="chatForm">
-          <textarea id="prompt" rows="1" maxlength="12000"
-            placeholder="Ask anything..."
-            aria-label="Message AI Universe" required></textarea>
-          <button class="send" id="send" aria-label="Send message"
-            type="submit">↑</button>
-        </form>
+  <section id="app-screen" class="hidden">
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <strong>✦ Kids Cyber City</strong>
+        <button id="new-chat-btn" class="btn" type="button" title="New chat">＋</button>
       </div>
-      <div class="status" id="status" role="status" aria-live="polite"></div>
-      <div class="composer-note">AI can make mistakes. Verify important information.</div>
-    </div>
-  </main>
-</div>
 
-<script type="module">
-import { initializeApp } from
-  "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-import {
-  getFirestore,
-  collection,
-  doc,
-  getDocs,
-  setDoc,
-  deleteDoc
-} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+      <nav class="nav-list" aria-label="Workspace tools">
+        <button class="nav-item active" data-tool="chat">💬 AI Chat</button>
+        <button class="nav-item" data-tool="planner">📝 YouTube Planner</button>
+        <button class="nav-item" data-tool="code">💻 Code Assistant</button>
+        <button class="nav-item" data-tool="export">📥 Export Chat</button>
+      </nav>
 
-/*
- * Firebase configuration:
- * Use your Firebase Console > Project settings > Your web app.
- * These values match the configuration supplied for this project.
- */
-const firebaseConfig = {
-  apiKey: "AIzaSyBz2h4pdzHIWcEMMJbd1EVr7zUVviWJ8q4",
-  authDomain: "ai-universe-7d50b.firebaseapp.com",
-  projectId: "ai-universe-7d50b",
-  storageBucket: "ai-universe-7d50b.firebasestorage.app",
-  messagingSenderId: "904718036677",
-  appId: "1:904718036677:web:316d06e91a264de02b4aac",
-  measurementId: "G-7CFGGW2R81"
-};
+      <div class="section-label">Recent conversations</div>
+      <div id="history-container"></div>
 
-const $ = id => document.getElementById(id);
+      <div class="sidebar-footer">
+        <div class="profile">
+          <div id="user-avatar">U</div>
+          <div class="profile-info">
+            <div id="user-name">User</div>
+            <div id="user-email"></div>
+          </div>
+        </div>
+        <button id="logout-btn" class="btn full" type="button">Sign out</button>
+      </div>
+    </aside>
 
-const loginScreen = $("loginScreen");
-const appShell = $("app");
-const sidebar = $("sidebar");
-const messageList = $("messageList");
-const promptInput = $("prompt");
+    <main id="main">
+      <header class="topbar">
+        <button id="menu-toggle" class="btn mobile-only" type="button" aria-label="Open menu">☰</button>
+        <span id="active-title">AI Chat</span>
+        <span class="muted small">AI Universe</span>
+      </header>
 
-let auth = null;
-let db = null;
-let user = null;
-let chats = [];
-let activeId = null;
-let busy = false;
-let view = "chat";
-let authGeneration = 0;
+      <div id="chat-scroller">
+        <section id="welcome-view">
+          <h2>What can we create today?</h2>
+          <p>Ask a question, plan a video or get help with code.</p>
+          <div id="quick-prompts"></div>
+        </section>
+        <section id="chat-messages" aria-live="polite" aria-label="Conversation"></section>
+      </div>
 
-const makeId = () => {
-  if (globalThis.crypto?.randomUUID) return crypto.randomUUID();
-  return Date.now().toString(36) + Math.random().toString(36).slice(2);
-};
+      <div class="composer-area">
+        <div class="composer-inner">
+          <div class="composer-box">
+            <textarea id="user-prompt" rows="1" maxlength="12000"
+              placeholder="Ask anything..." aria-label="Your message"></textarea>
+            <button id="send-button" type="button" aria-label="Send message">➤</button>
+          </div>
+          <div class="composer-note">AI can make mistakes. Check important information.</div>
+          <div id="app-status" role="status" aria-live="polite"></div>
+        </div>
+      </div>
+    </main>
+  </section>
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import {
+      getAuth, GoogleAuthProvider, signInWithPopup, signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import {
+      getFirestore, collection, doc, setDoc, query, orderBy,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-const activeChat = () => chats.find(chat => chat.id === activeId);
+    /*
+      STEP 1:
+      Replace every placeholder below with your Firebase web-app config.
+      Firebase Console > Project settings > Your apps > Web app.
+      Never put your Gemini API key in this file.
+    */
+    const firebaseConfig = {
+      apiKey: "YOUR_FIREBASE_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
 
-function setStatus(message = "", isError = false) {
-  const el = $("status");
-  el.textContent = message;
-  el.classList.toggle("error", isError);
-}
+    const firebaseConfigured = Object.values(firebaseConfig).every(
+      value => typeof value === "string" &&
+        value.length > 0 &&
+        !value.includes("YOUR_")
+    );
 
-function setLoginStatus(message = "", isError = false) {
-  const el = $("loginStatus");
-  el.textContent = message;
-  el.classList.toggle("error", isError);
-}
+    let auth = null;
+    let db = null;
 
-function friendlyError(error, fallback) {
-  const code = error?.code || "";
+    if (firebaseConfigured) {
+      const app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      db = getFirestore(app);
+    }
 
-  const messages = {
-    "auth/unauthorized-domain":
-      "This domain is not authorized. Add it in Firebase Authentication settings.",
-    "auth/popup-blocked":
-      "The sign-in popup was blocked. Allow popups and try again.",
-    "auth/popup-closed-by-user":
-      "The sign-in popup was closed before completion.",
-    "auth/cancelled-popup-request":
-      "Another sign-in request is already open.",
-    "auth/network-request-failed":
-      "Network error. Check your internet connection.",
-    "permission-denied":
-      "Permission denied. Check your Firestore security rules.",
-    "unavailable":
-      "Firebase is temporarily unavailable. Try again."
-  };
+    const $ = id => document.getElementById(id);
 
-  return messages[code] || error?.message || fallback;
-}
+    const authScreen = $("auth-screen");
+    const appScreen = $("app-screen");
+    const authStatus = $("auth-status");
+    const appStatus = $("app-status");
+    const loginButton = $("google-login");
+    const logoutButton = $("logout-btn");
+    const sidebar = $("sidebar");
+    const historyContainer = $("history-container");
+    const activeTitle = $("active-title");
+    const welcomeView = $("welcome-view");
+    const quickPrompts = $("quick-prompts");
+    const chatMessages = $("chat-messages");
+    const chatScroller = $("chat-scroller");
+    const userPrompt = $("user-prompt");
+    const sendButton = $("send-button");
+    const navItems = [...document.querySelectorAll(".nav-item")];
 
-function cleanChat(data) {
-  if (!data || typeof data.id !== "string") return null;
+    const toolSettings = {
+      chat: {
+        title: "AI Chat",
+        placeholder: "Ask anything...",
+        prompts: [
+          "Explain artificial intelligence in simple words",
+          "Give me 5 catchy YouTube video titles",
+          "Help me build a responsive website",
+          "Create a weekly study schedule"
+        ]
+      },
+      planner: {
+        title: "YouTube Planner",
+        placeholder: "Describe your video topic...",
+        prompts: [
+          "Plan a 5-minute video about online safety for kids",
+          "Write a strong hook and video script outline",
+          "Suggest thumbnail concepts for a tech channel",
+          "Write an SEO-friendly video description and tags"
+        ]
+      },
+      code: {
+        title: "Code Assistant",
+        placeholder: "Describe your coding task or paste an error...",
+        prompts: [
+          "Create a responsive navigation bar in HTML and CSS",
+          "Explain how JavaScript async and await work",
+          "Help me debug a TypeError in JavaScript",
+          "Write a CSV export function in JavaScript"
+        ]
+      },
+      export: {
+        title: "Export Chat",
+        placeholder: "Use the export options below...",
+        prompts: [
+          "Download the current conversation as a text file",
+          "Copy the current conversation to the clipboard"
+        ]
+      }
+    };
 
-  const messages = Array.isArray(data.messages) ? data.messages : [];
+    let currentUser = null;
+    let currentChatId = null;
+    let currentMessages = [];
+    let chatCreatedAt = Date.now();
+    let activeTool = "chat";
+    let isWaiting = false;
+    let unsubscribeHistory = null;
+    let unsubscribeChats = null;
+    let historyCache = [];
 
-  return {
-    id: data.id,
-    title: typeof data.title === "string" ? data.title : "New chat",
-    updatedAt: Number(data.updatedAt) || 0,
-    messages: messages.filter(message =>
-      message &&
-      ["user", "assistant"].includes(message.role) &&
-      typeof message.text === "string"
-    ).slice(-200)
-  };
-}
+    function setStatus(element, message, type = "") {
+      element.textContent = message;
+      element.style.color = type === "error" ? "var(--danger)" :
+        type === "success" ? "var(--success)" : "var(--muted)";
+    }
 
-function renderHistory() {
-  const box = $("history");
-  box.replaceChildren();
+    function closeMobileSidebar() {
+      sidebar.classList.remove("open");
+    }
 
-  [...chats]
-    .sort((a, b) => b.updatedAt - a.updatedAt)
-    .forEach(chat => {
+    function scrollToBottom() {
+      chatScroller.scrollTop = chatScroller.scrollHeight;
+    }
+
+    function addBubble(role, text) {
+      welcomeView.classList.add("hidden");
+
       const row = document.createElement("div");
-      row.className = "history-row";
+      row.className = `chat-msg ${role === "user" ? "user" : "assistant"}`;
 
-      const open = document.createElement("button");
-      open.type = "button";
-      open.className = "history-open";
-      open.textContent = chat.title || "New chat";
-      open.title = chat.title;
-      open.setAttribute("aria-current", chat.id === activeId ? "true" : "false");
-      open.onclick = () => openChat(chat.id);
+      const icon = document.createElement("div");
+      icon.className = "msg-icon";
+      icon.textContent = role === "user" ? "You" : "AI";
 
-      const del = document.createElement("button");
-      del.type = "button";
-      del.className = "delete-chat";
-      del.textContent = "×";
-      del.setAttribute("aria-label", "Delete " + chat.title);
-      del.title = "Delete conversation";
-      del.onclick = () => removeChat(chat.id);
+      const bubble = document.createElement("div");
+      bubble.className = "chat-bubble";
+      bubble.textContent = text;
 
-      row.append(open, del);
-      box.append(row);
-    });
-}
+      row.append(icon, bubble);
+      chatMessages.appendChild(row);
+      scrollToBottom();
+      return bubble;
+    }
 
-function renderChat() {
-  messageList.replaceChildren();
-  const chat = activeChat();
+    function renderMessages(messages) {
+      chatMessages.replaceChildren();
 
-  if (!chat || !chat.messages.length) {
-    const welcome = document.createElement("div");
-    welcome.className = "welcome";
+      if (!messages.length) {
+        welcomeView.classList.remove("hidden");
+        return;
+      }
 
-    const logo = document.createElement("div");
-    logo.className = "logo";
-    logo.textContent = "✦ AI Universe";
+      welcomeView.classList.add("hidden");
+      for (const message of messages) {
+        addBubble(message.role, message.text);
+      }
+    }
 
-    const heading = document.createElement("h2");
-    heading.textContent = "What can I help with?";
-
-    const description = document.createElement("p");
-    description.textContent =
-      "Ask a question, explore an idea, write code or plan your next project.";
-
-    const quick = document.createElement("div");
-    quick.className = "quick-actions";
-
-    [
-      ["Explain something", "Explain a complex topic in simple language."],
-      ["Write code", "Help me write and debug code."],
-      ["Create a video plan", "Help me plan an engaging YouTube video."]
-    ].forEach(([label, text]) => {
+    function makeHistoryButton(chat) {
       const button = document.createElement("button");
       button.type = "button";
-      button.className = "secondary";
-      button.textContent = label;
-      button.onclick = () => {
-        promptInput.value = text;
-        promptInput.focus();
-      };
-      quick.append(button);
-    });
+      button.className = "history-item" +
+        (chat.id === currentChatId ? " active" : "");
 
-    welcome.append(logo, heading, description, quick);
-    messageList.append(welcome);
-  } else {
-    chat.messages.forEach(message => {
-      const el = document.createElement("article");
-      el.className = "message " + message.role;
+      const title = document.createElement("span");
+      title.textContent = chat.title || "New chat";
+      button.appendChild(title);
 
-      const role = document.createElement("div");
-      role.className = "message-role";
-      role.textContent =
-        message.role === "user" ? "YOU" : "AI UNIVERSE";
+      button.addEventListener("click", () => {
+        if (isWaiting) {
+          setStatus(appStatus, "Please wait for the current response.");
+          return;
+        }
 
-      const content = document.createElement("div");
-      content.className = "result";
-      content.textContent = message.text;
+        currentChatId = chat.id;
+        chatCreatedAt = chat.createdAt || Date.now();
+        currentMessages = Array.isArray(chat.messages) ? chat.messages : [];
+        renderMessages(currentMessages);
+        renderHistory();
+        setStatus(appStatus, "");
+        closeMobileSidebar();
+      });
 
-      el.append(role, content);
-      messageList.append(el);
-    });
-  }
-
-  renderHistory();
-  $("messages").scrollTop = $("messages").scrollHeight;
-}
-
-async function saveChat(chat) {
-  if (!user || !db) return false;
-
-  chat.updatedAt = Date.now();
-
-  try {
-    await setDoc(doc(db, "users", user.uid, "chats", chat.id), {
-      title: chat.title,
-      messages: chat.messages.slice(-200),
-      updatedAt: chat.updatedAt
-    });
-
-    renderHistory();
-    return true;
-  } catch (error) {
-    console.error("Save chat failed:", error);
-    setStatus(
-      "Chat could not be saved to the cloud: " +
-      friendlyError(error, "Check Firestore rules and connection."),
-      true
-    );
-    return false;
-  }
-}
-
-async function loadChats() {
-  if (!user || !db) return;
-
-  const loadingUserId = user.uid;
-  setStatus("Loading your chats...");
-
-  try {
-    const snapshot = await getDocs(
-      collection(db, "users", loadingUserId, "chats")
-    );
-
-    // Ignore stale results if the account changed while loading.
-    if (!user || user.uid !== loadingUserId) return;
-
-    chats = snapshot.docs
-      .map(item => cleanChat({ id: item.id, ...item.data() }))
-      .filter(Boolean);
-
-    chats.sort((a, b) => b.updatedAt - a.updatedAt);
-    activeId = chats.length ? chats[0].id : null;
-
-    if (!activeId) {
-      await createChat();
-    } else {
-      showView("chat");
-      renderChat();
+      return button;
     }
 
-    setStatus("");
-  } catch (error) {
-    console.error("Load chats failed:", error);
-    chats = [];
-    activeId = null;
-    renderChat();
-    setStatus(
-      "Could not load chat history. Check Firestore database, security rules and connection.",
-      true
-    );
-  }
-}
-
-async function createChat() {
-  if (!user || busy) return;
-
-  const chat = {
-    id: makeId(),
-    title: "New chat",
-    messages: [],
-    updatedAt: Date.now()
-  };
-
-  chats.push(chat);
-  activeId = chat.id;
-  showView("chat");
-  renderChat();
-
-  await saveChat(chat);
-}
-
-async function openChat(id) {
-  if (busy || !chats.some(chat => chat.id === id)) return;
-
-  activeId = id;
-  showView("chat");
-  sidebar.classList.remove("open");
-  renderChat();
-}
-
-async function removeChat(id) {
-  if (busy || !user || !db) return;
-
-  const chat = chats.find(item => item.id === id);
-  if (!chat || !confirm("Permanently delete this conversation?")) return;
-
-  try {
-    await deleteDoc(doc(db, "users", user.uid, "chats", id));
-    chats = chats.filter(item => item.id !== id);
-
-    if (activeId === id) activeId = null;
-
-    if (!activeId) {
-      const replacement = {
-        id: makeId(),
-        title: "New chat",
-        messages: [],
-        updatedAt: Date.now()
-      };
-      chats.push(replacement);
-      activeId = replacement.id;
-      showView("chat");
-      renderChat();
-      await saveChat(replacement);
-    } else {
-      renderChat();
-    }
-
-    setStatus("Conversation deleted.");
-  } catch (error) {
-    console.error("Delete chat failed:", error);
-    setStatus(
-      "Delete failed: " + friendlyError(error, "Check Firestore rules."),
-      true
-    );
-  }
-}
-
-async function sendMessage(text) {
-  const chat = activeChat();
-  const cleanText = text.trim();
-
-  if (!user || !chat || busy || !cleanText) return;
-
-  busy = true;
-  $("send").disabled = true;
-  $("newChat").disabled = true;
-  setStatus("AI is thinking...");
-
-  chat.messages.push({ role: "user", text: cleanText });
-
-  if (chat.title === "New chat") {
-    chat.title = cleanText.replace(/\s+/g, " ").slice(0, 45);
-  }
-
-  renderChat();
-
-  // Persist the user message before requesting the AI response.
-  await saveChat(chat);
-
-  try {
-    const token = await user.getIdToken();
-
-    const response = await fetch("/api/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + token
-      },
-      body: JSON.stringify({
-        messages: chat.messages.slice(-40).map(message => ({
-          role: message.role,
-          text: message.text
-        }))
-      })
-    });
-
-    const data = await response.json().catch(() => null);
-
-    if (!response.ok) {
-      throw new Error(
-        data && typeof data.error === "string"
-          ? data.error
-          : "AI request failed (" + response.status + ")."
-      );
-    }
-
-    if (!data || typeof data.reply !== "string" || !data.reply.trim()) {
-      throw new Error("The AI returned an empty response.");
-    }
-
-    chat.messages.push({
-      role: "assistant",
-      text: data.reply.trim()
-    });
-
-    renderChat();
-    await saveChat(chat);
-    setStatus("");
-  } catch (error) {
-    console.error("Chat request failed:", error);
-    setStatus(
-      friendlyError(error, "AI request failed. Check your backend."),
-      true
-    );
-  } finally {
-    busy = false;
-    $("send").disabled = false;
-    $("newChat").disabled = false;
-  }
-}
-
-function showView(nextView) {
-  const allowedViews = ["chat", "youtube", "files", "utilities"];
-  if (!allowedViews.includes(nextView)) nextView = "chat";
-
-  view = nextView;
-
-  const titles = {
-    chat: "AI Universe",
-    youtube: "YouTube Planner",
-    files: "File Assistant",
-    utilities: "Text Utilities"
-  };
-
-  $("viewTitle").textContent = titles[nextView];
-  $("composerWrap").hidden = nextView !== "chat";
-
-  document.querySelectorAll("[data-view]").forEach(button => {
-    button.classList.toggle("active", button.dataset.view === nextView);
-  });
-
-  sidebar.classList.remove("open");
-  setStatus("");
-  messageList.replaceChildren();
-
-  if (nextView === "chat") renderChat();
-  else if (nextView === "youtube") renderYouTube();
-  else if (nextView === "files") renderFiles();
-  else if (nextView === "utilities") renderUtilities();
-}
-
-function renderYouTube() {
-  const card = document.createElement("div");
-  card.className = "tool-card";
-
-  card.innerHTML = `
-    <h2>▶ YouTube AI Planner</h2>
-    <p class="muted">Create a script and production plan in your AI chat.</p>
-    <label for="ytTopic">Video topic</label>
-    <input id="ytTopic" maxlength="500" placeholder="Enter your video topic">
-
-    <label for="ytLanguage">Language</label>
-    <select id="ytLanguage">
-      <option>Hindi</option>
-      <option>English</option>
-      <option>Hinglish</option>
-    </select>
-
-    <label for="ytDuration">Target duration</label>
-    <select id="ytDuration">
-      <option>60 seconds</option>
-      <option>5 minutes</option>
-      <option>10 minutes</option>
-      <option>15 minutes</option>
-      <option>30 minutes or longer</option>
-    </select>
-
-    <div class="tool-actions">
-      <button class="primary" id="ytGenerate" type="button">Create video plan</button>
-    </div>
-    <p class="muted small-note">Creates a text plan, not a rendered video.</p>
-  `;
-
-  messageList.append(card);
-
-  $("ytGenerate").onclick = async () => {
-    if (busy) return;
-
-    const topic = $("ytTopic").value.trim();
-    if (!topic) {
-      $("ytTopic").focus();
-      return;
-    }
-
-    if (!activeChat()) {
-      setStatus("Create a chat before generating a plan.", true);
-      return;
-    }
-
-    const language = $("ytLanguage").value;
-    const duration = $("ytDuration").value;
-
-    showView("chat");
-
-    await sendMessage(
-      "Create a detailed YouTube production plan about: " + topic +
-      ". Language: " + language +
-      ". Target duration: " + duration +
-      ". Include multiple title options, target audience, opening hook, " +
-      "timed outline, complete script, scene-by-scene visual directions, " +
-      "narration, sound effects, thumbnail concept, editing instructions, " +
-      "captions and description. Estimate runtime honestly. Do not claim " +
-      "that you rendered or uploaded a video."
-    );
-  };
-}
-
-function renderFiles() {
-  const card = document.createElement("div");
-  card.className = "tool-card";
-
-  card.innerHTML = `
-    <h2>▤ File Assistant</h2>
-    <p class="muted">Read text-based files up to 1 MB. PDF and image OCR are not included.</p>
-
-    <label for="fileInput">Choose a text file</label>
-    <input id="fileInput" type="file"
-      accept=".txt,.md,.csv,.json,.html,.css,.js,.xml,.log">
-
-    <p class="muted" id="fileStatus" role="status" aria-live="polite"></p>
-    <label for="fileContent">File contents</label>
-    <textarea id="fileContent" maxlength="12000"
-      placeholder="File contents or paste text here..."></textarea>
-
-    <div class="tool-actions">
-      <button class="secondary" id="fileSummary" type="button">Summarize</button>
-      <button class="secondary" id="fileExplain" type="button">Explain</button>
-      <button class="secondary" id="fileClear" type="button">Clear</button>
-    </div>
-  `;
-
-  messageList.append(card);
-
-  $("fileInput").onchange = async () => {
-    const file = $("fileInput").files?.[0];
-    $("fileContent").value = "";
-    $("fileStatus").textContent = "";
-
-    if (!file) return;
-
-    if (file.size > 1024 * 1024) {
-      $("fileStatus").textContent = "Maximum file size is 1 MB.";
-      return;
-    }
-
-    try {
-      const content = await file.text();
-      $("fileContent").value = content.slice(0, 12000);
-      $("fileStatus").textContent = content.length > 12000
-        ? "File loaded. Only the first 12,000 characters are available."
-        : "File loaded locally.";
-    } catch (error) {
-      console.error("File read failed:", error);
-      $("fileStatus").textContent = "Could not read this file.";
-    }
-  };
-
-  $("fileClear").onclick = () => {
-    $("fileContent").value = "";
-    $("fileInput").value = "";
-    $("fileStatus").textContent = "";
-  };
-
-  $("fileSummary").onclick = () => fileAction("summarize");
-  $("fileExplain").onclick = () => fileAction("explain");
-}
-
-async function fileAction(mode) {
-  if (busy) return;
-
-  const content = $("fileContent")?.value.trim();
-  if (!content) {
-    $("fileStatus").textContent = "Select a file or enter some text first.";
-    return;
-  }
-
-  if (content.length > 12000) {
-    $("fileStatus").textContent = "Text limit is 12,000 characters.";
-    return;
-  }
-
-  if (!activeChat()) {
-    setStatus("Create a chat before using the File Assistant.", true);
-    return;
-  }
-
-  const request = mode === "summarize"
-    ? "Summarize this content. Explain its key points clearly:
-
-" + content
-    : "Explain this content in simple language, step by step:
-
-" + content;
-
-  showView("chat");
-  await sendMessage(request);
-}
-
-function renderUtilities() {
-  const card = document.createElement("div");
-  card.className = "tool-card";
-
-  card.innerHTML = `
-    <h2>⌘ Text Utilities</h2>
-
-    <h3>Word and character counter</h3>
-    <textarea id="countText" placeholder="Enter text..."></textarea>
-    <p id="countResult" class="muted">Words: 0 · Characters: 0</p>
-
-    <h3>Text case converter</h3>
-    <textarea id="caseText" placeholder="Enter text to convert..."></textarea>
-
-    <div class="tool-actions">
-      <button class="secondary" id="caseUpper" type="button">UPPERCASE</button>
-      <button class="secondary" id="caseLower" type="button">lowercase</button>
-      <button class="secondary" id="caseTitle" type="button">Title Case</button>
-    </div>
-
-    <label for="caseResult">Converted text</label>
-    <textarea id="caseResult" placeholder="Result..." readonly></textarea>
-    <button class="secondary" id="copyResult" type="button">Copy result</button>
-  `;
-
-  messageList.append(card);
-
-  $("countText").oninput = () => {
-    const value = $("countText").value;
-    const words = value.trim() ? value.trim().split(/\s+/u).length : 0;
-
-    $("countResult").textContent =
-      "Words: " + words + " · Characters: " + value.length;
-  };
-
-  $("caseUpper").onclick = () => {
-    $("caseResult").value = $("caseText").value.toUpperCase();
-  };
-
-  $("caseLower").onclick = () => {
-    $("caseResult").value = $("caseText").value.toLowerCase();
-  };
-
-  $("caseTitle").onclick = () => {
-    $("caseResult").value = $("caseText").value
-      .toLowerCase()
-      .replace(/\p{L}/gu, char => char.toUpperCase());
-  };
-
-  $("copyResult").onclick = async () => {
-    const result = $("caseResult").value;
-
-    try {
-      if (!navigator.clipboard?.writeText) {
-        throw new Error("Clipboard API unavailable");
+    function renderHistory() {
+      historyContainer.replaceChildren();
+
+      for (const chat of historyCache) {
+        historyContainer.appendChild(makeHistoryButton(chat));
       }
-      await navigator.clipboard.writeText(result);
-      setStatus("Copied to clipboard.");
-    } catch {
-      $("caseResult").focus();
-      $("caseResult").select();
-      setStatus("Select the text and copy it manually.");
     }
-  };
-}
 
-function exportChats() {
-  const backup = {
-    app: "AI Universe",
-    version: 1,
-    exportedAt: new Date().toISOString(),
-    chats
-  };
+    function listenToChatHistory() {
+      if (unsubscribeHistory) unsubscribeHistory();
+      if (unsubscribeChats) unsubscribeChats();
+      if (!currentUser) return;
 
-  const blob = new Blob(
-    [JSON.stringify(backup, null, 2)],
-    { type: "application/json" }
-  );
+      const chatsRef = collection(db, "users", currentUser.uid, "chats");
+      const chatsQuery = query(chatsRef, orderBy("updatedAt", "desc"));
 
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "ai-universe-backup.json";
-  document.body.append(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
+      unsubscribeHistory = onSnapshot(chatsQuery, snapshot => {
+        historyCache = snapshot.docs.map(item => ({
+          id: item.id,
+          ...item.data()
+        }));
+        renderHistory();
+      }, error => {
+        console.error("History load failed:", error);
+        setStatus(appStatus, "Could not load chat history. Check Firestore rules.", "error");
+      });
+    }
 
-  setStatus("Chat backup exported.");
-}
+    async function saveCurrentChat() {
+      if (!currentUser || !currentMessages.length) return;
 
-async function loginWithGoogle() {
-  if (!auth) {
-    setLoginStatus("Firebase is not initialized. Check configuration.", true);
-    return;
-  }
+      if (!currentChatId) {
+        currentChatId = doc(collection(db, "users", currentUser.uid, "chats")).id;
+        chatCreatedAt = Date.now();
+      }
 
-  const button = $("googleLogin");
-  button.disabled = true;
-  setLoginStatus("Opening Google sign-in...");
+      const firstUserMessage = currentMessages.find(m => m.role === "user");
+      const title = firstUserMessage
+        ? firstUserMessage.text.slice(0, 55)
+        : "New chat";
 
-  try {
-    const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: "select_account" });
-    await signInWithPopup(auth, provider);
-    setLoginStatus("");
-  } catch (error) {
-    console.error("Google sign-in failed:", error);
+      const chatRef = doc(db, "users", currentUser.uid, "chats", currentChatId);
 
-    if (error?.code === "auth/popup-blocked") {
-      try {
-        await signInWithRedirect(auth, new GoogleAuthProvider());
+      await setDoc(chatRef, {
+        title,
+        createdAt: chatCreatedAt,
+        updatedAt: Date.now(),
+        messages: currentMessages
+      }, { merge: true });
+    }
+
+    function newChat() {
+      if (isWaiting) {
+        setStatus(appStatus, "Please wait until the current response finishes.");
         return;
-      } catch (redirectError) {
-        console.error("Google redirect sign-in failed:", redirectError);
-        setLoginStatus(
-          friendlyError(redirectError, "Google sign-in failed."),
-          true
-        );
       }
-    } else {
-      setLoginStatus(
-        friendlyError(error, "Google sign-in failed. Check Firebase settings."),
-        true
-      );
-    }
-  } finally {
-    button.disabled = false;
-  }
-}
 
-async function handleAuthChange(nextUser) {
-  const generation = ++authGeneration;
-  user = nextUser;
-
-  if (!nextUser) {
-    appShell.hidden = true;
-    loginScreen.hidden = false;
-    chats = [];
-    activeId = null;
-    busy = false;
-    renderHistory();
-    messageList.replaceChildren();
-    $("userEmail").textContent = "";
-    $("accountLabel").textContent = "Account";
-    $("send").disabled = false;
-    $("newChat").disabled = false;
-    $("googleLogin").disabled = false;
-    setStatus("");
-    setLoginStatus("Sign in with Google to continue.");
-    return;
-  }
-
-  loginScreen.hidden = true;
-  appShell.hidden = false;
-  $("userEmail").textContent = nextUser.email || "";
-  $("accountLabel").textContent = nextUser.email || "Google account";
-  setLoginStatus("");
-
-  await loadChats();
-
-  // Do not let an older account's load operation overwrite a newer session.
-  if (generation !== authGeneration) return;
-}
-
-async function start() {
-  try {
-    const firebaseApp = initializeApp(firebaseConfig);
-    auth = getAuth(firebaseApp);
-    db = getFirestore(firebaseApp);
-
-    // Process any pending redirect sign-in result.
-    try {
-      await getRedirectResult(auth);
-    } catch (error) {
-      console.error("Google redirect result failed:", error);
-      setLoginStatus(friendlyError(error, "Google sign-in could not be completed."), true);
+      currentChatId = null;
+      currentMessages = [];
+      chatCreatedAt = Date.now();
+      renderMessages([]);
+      renderHistory();
+      userPrompt.value = "";
+      setStatus(appStatus, "");
+      userPrompt.focus();
+      closeMobileSidebar();
     }
 
-    onAuthStateChanged(auth, handleAuthChange, error => {
-      console.error("Authentication state error:", error);
-      setLoginStatus(
-        friendlyError(error, "Could not check your login session."),
-        true
+    function conversationText() {
+      return currentMessages.map(message =>
+        `${message.role === "user" ? "You" : "AI"}:\n${message.text}`
+      ).join("\n\n");
+    }
+
+    function exportCurrentChat() {
+      if (!currentMessages.length) {
+        setStatus(appStatus, "There is no conversation to export.", "error");
+        return;
+      }
+
+      const blob = new Blob(
+        ["Kids Cyber City — AI Universe\n\n", conversationText()],
+        { type: "text/plain;charset=utf-8" }
       );
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `ai-universe-chat-${Date.now()}.txt`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setStatus(appStatus, "Chat export downloaded.", "success");
+    }
+
+    async function copyCurrentChat() {
+      if (!currentMessages.length) {
+        setStatus(appStatus, "There is no conversation to copy.", "error");
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(conversationText());
+        setStatus(appStatus, "Conversation copied.", "success");
+      } catch {
+        setStatus(appStatus, "Clipboard access is unavailable. Try downloading the chat instead.", "error");
+      }
+    }
+
+    function switchTool(tool) {
+      activeTool = toolSettings[tool] ? tool : "chat";
+      const settings = toolSettings[activeTool];
+
+      activeTitle.textContent = settings.title;
+      userPrompt.placeholder = settings.placeholder;
+
+      navItems.forEach(button => {
+        const active = button.dataset.tool === activeTool;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-current", active ? "page" : "false");
+      });
+
+      quickPrompts.replaceChildren();
+
+      for (const prompt of settings.prompts) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "prompt-card";
+        button.textContent = prompt;
+
+        button.addEventListener("click", () => {
+          if (activeTool === "export") {
+            if (prompt.startsWith("Download")) exportCurrentChat();
+            else copyCurrentChat();
+            return;
+          }
+
+          userPrompt.value = prompt;
+          sendUserMessage();
+        });
+
+        quickPrompts.appendChild(button);
+      }
+
+      userPrompt.disabled = activeTool === "export";
+      sendButton.disabled = activeTool === "export" || isWaiting;
+      if (activeTool !== "export") userPrompt.focus();
+      closeMobileSidebar();
+    }
+
+    async function sendUserMessage() {
+      if (activeTool === "export") {
+        exportCurrentChat();
+        return;
+      }
+
+      const text = userPrompt.value.trim();
+      if (!text || isWaiting) return;
+
+      if (!currentUser) {
+        setStatus(appStatus, "Please sign in first.", "error");
+        return;
+      }
+
+      isWaiting = true;
+      sendButton.disabled = true;
+      userPrompt.disabled = true;
+      setStatus(appStatus, "Connecting to AI...");
+
+      userPrompt.value = "";
+      currentMessages.push({ role: "user", text });
+      addBubble("user", text);
+      const loadingBubble = addBubble("assistant", "Thinking...");
+
+      try {
+        // Save the user's message before calling the AI.
+        await saveCurrentChat();
+
+        const token = await currentUser.getIdToken();
+
+        // Tool instructions are sent to the AI, not shown as user text.
+        const apiMessages = currentMessages.map((message, index) => {
+          if (index !== currentMessages.length - 1 || message.role !== "user") {
+            return message;
+          }
+
+          let instruction = "";
+          if (activeTool === "planner") {
+            instruction = "Act as a professional YouTube content planner. Give a useful, structured plan with title, hook, outline, CTA and relevant SEO advice where appropriate.\n\n";
+          } else if (activeTool === "code") {
+            instruction = "Act as a careful programming assistant. Explain the solution, provide correct code when useful, and identify relevant security concerns.\n\n";
+          }
+
+          return { ...message, text: instruction + message.text };
+        });
+
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ messages: apiMessages })
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(data.error || `AI request failed (${response.status}).`);
+        }
+
+        if (typeof data.reply !== "string" || !data.reply.trim()) {
+          throw new Error("The AI returned an empty response. Please try again.");
+        }
+
+        const answer = data.reply.trim();
+        loadingBubble.textContent = answer;
+        currentMessages.push({ role: "assistant", text: answer });
+
+        try {
+          await saveCurrentChat();
+          setStatus(appStatus, "Response received and chat saved.", "success");
+        } catch (saveError) {
+          console.error("Chat save failed:", saveError);
+          setStatus(appStatus, "Response received, but chat history could not be saved.", "error");
+        }
+      } catch (error) {
+        console.error("Chat request failed:", error);
+        loadingBubble.textContent = `Sorry, ${error.message || "something went wrong."}`;
+        setStatus(appStatus, "Check your connection, Firebase session and Cloudflare API configuration.", "error");
+      } finally {
+        isWaiting = false;
+        sendButton.disabled = activeTool === "export";
+        userPrompt.disabled = activeTool === "export";
+        scrollToBottom();
+      }
+    }
+
+    loginButton.addEventListener("click", async () => {
+      if (!firebaseConfigured) {
+        setStatus(authStatus, "Firebase setup is incomplete. Replace the configuration placeholders in index.html.", "error");
+        return;
+      }
+
+      loginButton.disabled = true;
+      setStatus(authStatus, "Opening Google sign-in...");
+
+      try {
+        await signInWithPopup(auth, new GoogleAuthProvider());
+        setStatus(authStatus, "");
+      } catch (error) {
+        console.error("Sign-in failed:", error);
+        setStatus(authStatus, error.message || "Google sign-in failed.", "error");
+      } finally {
+        loginButton.disabled = false;
+      }
     });
-  } catch (error) {
-    console.error("Firebase initialization failed:", error);
-    setLoginStatus(
-      "Firebase initialization failed. Verify your Firebase web-app configuration.",
-      true
-    );
-    $("googleLogin").disabled = true;
-  }
-}
 
-/* All navigation and button IDs are wired here. */
-$("googleLogin").addEventListener("click", loginWithGoogle);
+    logoutButton.addEventListener("click", async () => {
+      if (!auth) return;
 
-$("chatForm").addEventListener("submit", async event => {
-  event.preventDefault();
+      try {
+        if (unsubscribeHistory) unsubscribeHistory();
+        if (unsubscribeChats) unsubscribeChats();
+        unsubscribeHistory = null;
+        unsubscribeChats = null;
+        await signOut(auth);
+      } catch (error) {
+        console.error("Sign-out failed:", error);
+        setStatus(appStatus, "Could not sign out. Please try again.", "error");
+      }
+    });
 
-  const text = promptInput.value.trim();
-  if (!text || busy) return;
+    $("new-chat-btn").addEventListener("click", newChat);
+    $("send-button").addEventListener("click", sendUserMessage);
 
-  if (!activeChat()) {
-    setStatus("No active chat. Create a new chat and try again.", true);
-    return;
-  }
+    $("menu-toggle").addEventListener("click", () => {
+      sidebar.classList.toggle("open");
+    });
 
-  promptInput.value = "";
-  await sendMessage(text);
-});
+    navItems.forEach(button => {
+      button.addEventListener("click", () => switchTool(button.dataset.tool));
+    });
 
-$("newChat").addEventListener("click", async () => {
-  if (busy) return;
-  await createChat();
-});
+    userPrompt.addEventListener("keydown", event => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendUserMessage();
+      }
+    });
 
-$("menu").addEventListener("click", () => {
-  sidebar.classList.toggle("open");
-});
+    userPrompt.addEventListener("input", () => {
+      userPrompt.style.height = "auto";
+      userPrompt.style.height = `${Math.min(userPrompt.scrollHeight, 160)}px`;
+    });
 
-$("closeMenu").addEventListener("click", () => {
-  sidebar.classList.remove("open");
-});
+    if (firebaseConfigured) {
+      onAuthStateChanged(auth, user => {
+        currentUser = user;
 
-document.querySelectorAll("[data-view]").forEach(button => {
-  button.addEventListener("click", () => {
-    showView(button.dataset.view);
-  });
-});
+        if (!user) {
+          if (unsubscribeHistory) unsubscribeHistory();
+          if (unsubscribeChats) unsubscribeChats();
 
-$("exportChats").addEventListener("click", exportChats);
+          unsubscribeHistory = null;
+          unsubscribeChats = null;
+          historyCache = [];
+          currentChatId = null;
+          currentMessages = [];
 
-$("logout").addEventListener("click", async () => {
-  if (!auth) return;
+          authScreen.classList.remove("hidden");
+          appScreen.classList.add("hidden");
+          historyContainer.replaceChildren();
+          chatMessages.replaceChildren();
+          return;
+        }
 
-  if (busy) {
-    setStatus("Wait for the current AI response before signing out.", true);
-    return;
-  }
+        authScreen.classList.add("hidden");
+        appScreen.classList.remove("hidden");
 
-  try {
-    await signOut(auth);
-  } catch (error) {
-    console.error("Sign out failed:", error);
-    setStatus(friendlyError(error, "Sign out failed. Please try again."), true);
-  }
-});
+        $("user-name").textContent = user.displayName || "User";
+        $("user-email").textContent = user.email || "";
 
-start();
-</script>
+        const avatar = $("user-avatar");
+        avatar.replaceChildren();
+
+        if (user.photoURL) {
+          const image = document.createElement("img");
+          image.src = user.photoURL;
+          image.alt = "";
+          image.referrerPolicy = "no-referrer";
+          image.onerror = () => { avatar.textContent = "U"; };
+          avatar.appendChild(image);
+        } else {
+          avatar.textContent = (user.displayName || "U").charAt(0).toUpperCase();
+        }
+
+        listenToChatHistory();
+        switchTool("chat");
+        setStatus(appStatus, "Signed in successfully.", "success");
+      });
+    } else {
+      setStatus(authStatus, "Before using this workspace, add your real Firebase web configuration to index.html.", "error");
+    }
+
+    switchTool("chat");
+  </script>
 </body>
-</html>
+  </html>
+  
