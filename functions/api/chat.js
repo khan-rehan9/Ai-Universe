@@ -188,13 +188,16 @@ export async function onRequestPost({ request, env }) {
     return json({ error: "Method not allowed." }, 405);
   }
 
-  if (!env.GEMINI_API_KEY) {
+  const apiKey = (env.GEMINI_API_KEY || "").trim();
+  const projectId = (env.FIREBASE_PROJECT_ID || "").trim();
+
+  if (!apiKey) {
     return json({
       error: "Gemini API secret is not configured."
     }, 503);
   }
 
-  if (!env.FIREBASE_PROJECT_ID) {
+  if (!projectId) {
     return json({
       error: "Firebase project ID is not configured."
     }, 503);
@@ -208,10 +211,7 @@ export async function onRequestPost({ request, env }) {
     }, 401);
   }
 
-  const authenticated = await verifyFirebaseToken(
-    token,
-    env.FIREBASE_PROJECT_ID
-  );
+  const authenticated = await verifyFirebaseToken(token, projectId);
 
   if (!authenticated) {
     return json({
@@ -261,41 +261,48 @@ export async function onRequestPost({ request, env }) {
   }
 
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": env.GEMINI_API_KEY
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`;
+
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        systemInstruction: {
+          parts: [{
+            text:
+              "You are AI Universe, a helpful and accurate AI assistant. " +
+              "Respond clearly in the user's preferred language. " +
+              "Never claim to have performed an action you did not perform."
+          }]
         },
-        body: JSON.stringify({
-          systemInstruction: {
-            parts: [{
-              text:
-                "You are AI Universe, a helpful and accurate AI assistant. " +
-                "Respond clearly in the user's preferred language. " +
-                "Never claim to have performed an action you did not perform."
-            }]
-          },
-          contents,
-          generationConfig: {
-            maxOutputTokens: 1200,
-            temperature: 0.7
-          }
-        })
-      }
-    );
+        contents,
+        generationConfig: {
+          maxOutputTokens: 1200,
+          temperature: 0.7
+        }
+      })
+    });
 
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
+      console.error("Gemini API Error Response:", response.status, JSON.stringify(data));
+
       if (response.status === 429) {
         return json({
           error:
             "Gemini quota or rate limit reached. Please try again later. " +
             "No paid fallback was attempted."
         }, 429);
+      }
+
+      const backendMessage = data?.error?.message;
+      if (backendMessage) {
+        return json({
+          error: `Gemini Error (${response.status}): ${backendMessage}`
+        }, 502);
       }
 
       if ([400, 401, 403].includes(response.status)) {
@@ -328,11 +335,12 @@ export async function onRequestPost({ request, env }) {
     }
 
     return json({ reply });
-  } catch {
+  } catch (err) {
+    console.error("Fetch Exception:", err?.message || err);
     return json({
       error:
         "Could not connect to Gemini. " +
         "No paid fallback was attempted."
     }, 502);
   }
-          }
+}
