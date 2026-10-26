@@ -260,87 +260,87 @@ export async function onRequestPost({ request, env }) {
     }, 400);
   }
 
-  try {
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const payload = JSON.stringify({
+    systemInstruction: {
+      parts: [{
+        text:
+          "You are AI Universe, a helpful and accurate AI assistant. " +
+          "Respond clearly in the user's preferred language. " +
+          "Never claim to have performed an action you did not perform."
+      }]
+    },
+    contents,
+    generationConfig: {
+      maxOutputTokens: 1200,
+      temperature: 0.7
+    }
+  });
 
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        systemInstruction: {
-          parts: [{
-            text:
-              "You are AI Universe, a helpful and accurate AI assistant. " +
-              "Respond clearly in the user's preferred language. " +
-              "Never claim to have performed an action you did not perform."
-          }]
-        },
-        contents,
-        generationConfig: {
-          maxOutputTokens: 1200,
-          temperature: 0.7
+  // Automatic retry mechanism for transient 503 / network glitches
+  let lastResponse = null;
+  let lastData = null;
+
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      lastResponse = await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload
+      });
+
+      lastData = await lastResponse.json().catch(() => ({}));
+
+      if (lastResponse.ok) {
+        const candidate = lastData.candidates?.[0];
+        const reply = (candidate?.content?.parts || [])
+          .map(part => typeof part.text === "string" ? part.text : "")
+          .join("")
+          .trim();
+
+        if (reply) {
+          return json({ reply });
         }
-      })
-    });
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      console.error("Gemini API Error Response:", response.status, JSON.stringify(data));
-
-      if (response.status === 429) {
-        return json({
-          error:
-            "Gemini quota or rate limit reached. Please try again later. " +
-            "No paid fallback was attempted."
-        }, 429);
       }
 
-      const backendMessage = data?.error?.message;
-      if (backendMessage) {
-        return json({
-          error: `Gemini Error (${response.status}): ${backendMessage}`
-        }, 502);
+      // If server error 503 or 429, wait briefly and retry
+      if ([503, 500, 429].includes(lastResponse.status) && attempt < 3) {
+        await new Promise(r => setTimeout(r, 1200 * attempt));
+        continue;
       }
 
-      if ([400, 401, 403].includes(response.status)) {
-        return json({
-          error:
-            "Gemini rejected the request. Check your API key, " +
-            "API access, model availability and request settings."
-        }, 502);
+      break;
+    } catch (err) {
+      if (attempt < 3) {
+        await new Promise(r => setTimeout(r, 1000));
+        continue;
       }
+    }
+  }
 
+  if (!lastResponse || !lastResponse.ok) {
+    const status = lastResponse?.status || 502;
+    const backendMessage = lastData?.error?.message;
+
+    if (status === 429) {
       return json({
-        error:
-          "Gemini is temporarily unavailable. " +
-          "No paid fallback was attempted."
+        error: "Gemini quota or rate limit reached. Please try again in a moment."
+      }, 429);
+    }
+
+    if (backendMessage) {
+      return json({
+        error: `Gemini Error (${status}): ${backendMessage}`
       }, 502);
     }
 
-    const candidate = data.candidates?.[0];
-
-    const reply = (candidate?.content?.parts || [])
-      .map(part => typeof part.text === "string" ? part.text : "")
-      .join("")
-      .trim();
-
-    if (!reply) {
-      return json({
-        error:
-          "Gemini returned no text. Please try again or change your prompt."
-      }, 502);
-    }
-
-    return json({ reply });
-  } catch (err) {
-    console.error("Fetch Exception:", err?.message || err);
     return json({
-      error:
-        "Could not connect to Gemini. " +
-        "No paid fallback was attempted."
+      error: "Gemini is temporarily busy. Please send your message again."
     }, 502);
   }
-}
+
+  return json({
+    error: "Gemini returned no text. Please try asking again."
+  }, 502);
+      }
+          
