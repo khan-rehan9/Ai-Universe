@@ -7,7 +7,7 @@ const HEADERS = {
 const MAX_BODY_BYTES = 60000;
 const MAX_MESSAGES = 12;
 const MAX_MESSAGE_LENGTH = 4000;
-const GEMINI_MODEL = "gemini-2.5-flash";
+const GEMINI_MODEL = "gemini-1.5-flash";
 
 let cachedFirebaseKeys = null;
 let firebaseKeysExpiry = 0;
@@ -111,7 +111,7 @@ async function verifyFirebaseToken(token, projectId) {
     if (
       !signingKey ||
       signingKey.kty !== "RSA" ||
-      signingKey.alg && signingKey.alg !== "RS256"
+      (signingKey.alg && signingKey.alg !== "RS256")
     ) {
       return false;
     }
@@ -335,4 +335,4 @@ export async function onRequestPost({ request, env }) {
         "No paid fallback was attempted."
     }, 502);
   }
-}
+          }
