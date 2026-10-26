@@ -7,7 +7,7 @@ const HEADERS = {
 const MAX_BODY_BYTES = 60000;
 const MAX_MESSAGES = 12;
 const MAX_MESSAGE_LENGTH = 4000;
-const GEMINI_MODEL = "gemini-2.0-flash";
+const GEMINI_MODEL = "gemini-3.8-flash";
 
 let cachedFirebaseKeys = null;
 let firebaseKeysExpiry = 0;
