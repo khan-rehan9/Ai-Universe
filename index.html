@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,14 +27,13 @@ html, body {
   margin: 0;
   width: 100%;
   height: 100%;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system,
-    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: var(--text);
   background: var(--bg);
 }
 
 body { overflow: hidden; }
-button, textarea, input { font: inherit; }
+button, textarea, input, select { font: inherit; }
 button { cursor: pointer; }
 button:focus-visible, textarea:focus-visible {
   outline: 2px solid var(--accent);
@@ -52,7 +50,6 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 }
 
 /* SIDEBAR */
-
 .sidebar {
   width: var(--sidebar-width);
   min-width: var(--sidebar-width);
@@ -119,7 +116,7 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 .new-chat:hover { background: #e7e2ff; }
 
 .side-label {
-  margin: 25px 10px 10px;
+  margin: 20px 10px 8px;
   color: #9a9eaa;
   font-size: 10px;
   font-weight: 750;
@@ -194,13 +191,19 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 .sidebar-bottom {
   padding-top: 12px;
   border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .account {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 6px 4px;
+  padding: 8px 6px;
+  border-radius: 12px;
+  background: var(--surface);
+  cursor: pointer;
 }
 
 .avatar {
@@ -214,23 +217,48 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   color: #5b48be;
   font-weight: 750;
   font-size: 13px;
+  overflow: hidden;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .account-info { min-width: 0; flex: 1; }
-.account-name { font-size: 12px; font-weight: 650; }
-.account-status { font-size: 10px; color: var(--muted); margin-top: 3px; }
+.account-name { font-size: 12px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.account-status { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+.btn-auth-action {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: white;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all .2s;
+}
+
+.btn-auth-action:hover {
+  background: var(--surface-hover);
+  border-color: var(--accent);
+}
 
 /* MAIN LAYOUT */
-
 .main {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
   position: relative;
-  background:
-    radial-gradient(ellipse at 50% 0%, rgba(235,232,255,.24), transparent 48%),
-    #fff;
+  background: radial-gradient(ellipse at 50% 0%, rgba(235,232,255,.24), transparent 48%), #fff;
 }
 
 .topbar {
@@ -263,7 +291,6 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 }
 
 .icon-btn:hover { background: var(--surface-hover); }
-
 .mobile-menu { display: none; }
 
 .workspace-label {
@@ -293,15 +320,20 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   font-weight: 650;
 }
 
+.status-pill.error {
+  border-color: #fde8e8;
+  background: #fdf2f2;
+  color: #c53c4d;
+}
+
 .status-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #36b56a;
+  background: currentColor;
 }
 
 /* CHAT AREA */
-
 .chat-scroll {
   flex: 1;
   min-height: 0;
@@ -425,7 +457,6 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 }
 
 /* MESSAGES */
-
 .messages {
   display: flex;
   flex-direction: column;
@@ -465,6 +496,7 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   font-size: 13px;
   line-height: 1.8;
   overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 
 .message.user .message-content {
@@ -475,19 +507,6 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 }
 
 .message.assistant .message-content { padding-top: 2px; }
-
-.message-content pre {
-  overflow-x: auto;
-  padding: 14px;
-  background: #f5f6fa;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-}
-
-.message-content code {
-  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-  font-size: 12px;
-}
 
 .message-actions {
   display: flex;
@@ -529,7 +548,6 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 }
 
 /* COMPOSER */
-
 .composer-area {
   width: 100%;
   max-width: 790px;
@@ -631,8 +649,6 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   line-height: 1.6;
 }
 
-/* ATTACHMENT PREVIEW AND TOOL MENU */
-
 .attachment-preview {
   display: flex;
   flex-wrap: wrap;
@@ -671,8 +687,6 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   padding: 7px;
   z-index: 30;
 }
-
-.tool-menu[hidden], [hidden] { display: none !important; }
 
 .tool-menu button {
   display: flex;
@@ -715,8 +729,6 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   text-align: center;
 }
 
-.toast[hidden] { display: none; }
-
 .overlay {
   display: none;
   position: fixed;
@@ -726,7 +738,6 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 }
 
 /* RESPONSIVE */
-
 @media (min-width: 1200px) {
   .chat-container { padding-top: 45px; }
 }
@@ -836,18 +847,14 @@ button:disabled { cursor: not-allowed; opacity: .5; }
     </div>
 
     <div class="sidebar-bottom">
-      <button class="nav-item" id="settingsBtn">
-        <span class="nav-icon">⚙</span> Settings
-      </button>
-      <div class="account">
+      <div class="account" id="accountBox">
         <div class="avatar" id="userAvatar">AI</div>
         <div class="account-info">
           <div class="account-name" id="userName">AI Universe User</div>
-          <div class="account-status" id="authStatus">Workspace</div>
+          <div class="account-status" id="authStatus">Sign in required</div>
         </div>
-        <button class="icon-btn" id="accountBtn"
-          aria-label="Account options">⋯</button>
       </div>
+      <button class="btn-auth-action" id="authBtn">Sign in with Google</button>
     </div>
   </aside>
 
@@ -856,20 +863,18 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   <main class="main">
     <header class="topbar">
       <div class="topbar-left">
-        <button class="icon-btn mobile-menu" id="menuBtn"
-          aria-label="Open navigation">☰</button>
+        <button class="icon-btn mobile-menu" id="menuBtn" aria-label="Open navigation">☰</button>
         <div class="workspace-label">
           <span id="pageTitle">AI Chat</span>
           <small id="pageSubtitle">Your intelligent creative workspace</small>
         </div>
       </div>
       <div class="topbar-right">
-        <span class="status-pill">
+        <span class="status-pill" id="statusPill">
           <span class="status-dot"></span>
-          <span id="connectionLabel">Ready to help</span>
+          <span id="connectionLabel">Connecting...</span>
         </span>
-        <button class="icon-btn" id="themeBtn"
-          aria-label="Toggle theme" title="Toggle theme">☼</button>
+        <button class="icon-btn" id="themeBtn" aria-label="Toggle theme" title="Toggle theme">☼</button>
       </div>
     </header>
 
@@ -885,8 +890,7 @@ button:disabled { cursor: not-allowed; opacity: .5; }
         </div>
 
         <div class="suggestions" id="suggestions">
-          <button class="suggestion"
-            data-prompt="Help me understand a topic step by step, with simple examples.">
+          <button class="suggestion" data-prompt="Help me understand a topic step by step, with simple examples.">
             <div class="suggestion-icon">✦</div>
             <div>
               <strong>Learn something new</strong>
@@ -894,8 +898,7 @@ button:disabled { cursor: not-allowed; opacity: .5; }
             </div>
           </button>
 
-          <button class="suggestion"
-            data-prompt="Help me write a professional, polished piece of content.">
+          <button class="suggestion" data-prompt="Help me write a professional, polished piece of content.">
             <div class="suggestion-icon">✎</div>
             <div>
               <strong>Write anything</strong>
@@ -903,8 +906,7 @@ button:disabled { cursor: not-allowed; opacity: .5; }
             </div>
           </button>
 
-          <button class="suggestion"
-            data-prompt="Help me debug my code and explain the solution.">
+          <button class="suggestion" data-prompt="Help me debug my code and explain the solution.">
             <div class="suggestion-icon">⌘</div>
             <div>
               <strong>Build with code</strong>
@@ -912,8 +914,7 @@ button:disabled { cursor: not-allowed; opacity: .5; }
             </div>
           </button>
 
-          <button class="suggestion"
-            data-prompt="Help me plan a creative project and suggest the best next steps.">
+          <button class="suggestion" data-prompt="Help me plan a creative project and suggest the best next steps.">
             <div class="suggestion-icon">✧</div>
             <div>
               <strong>Explore an idea</strong>
@@ -928,36 +929,26 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 
     <section class="composer-area">
       <div class="composer" id="composer">
-        <textarea id="promptInput" rows="1"
-          aria-label="Message AI Universe"
-          placeholder="Ask anything, or describe what you want to create..."></textarea>
+        <textarea id="promptInput" rows="1" aria-label="Message AI Universe" placeholder="Ask anything, or describe what you want to create..."></textarea>
 
-        <div class="attachment-preview" id="attachmentPreview" hidden></div>
+        <div class="attachment-preview" id="attachmentPreview" style="display:none"></div>
 
-        <div class="tool-menu" id="toolMenu" hidden>
+        <div class="tool-menu" id="toolMenu" style="display:none">
           <button data-attach="file">
             <span>📎</span>
-            <span>Upload a file
-              <small>Documents and other files</small>
-            </span>
+            <span>Upload a file<small>Documents and other files</small></span>
           </button>
           <button data-attach="image">
             <span>🖼️</span>
-            <span>Upload an image
-              <small>Ask questions about your image</small>
-            </span>
+            <span>Upload an image<small>Ask questions about your image</small></span>
           </button>
           <button data-attach="audio">
             <span>🎧</span>
-            <span>Upload audio
-              <small>Audio analysis, when supported</small>
-            </span>
+            <span>Upload audio<small>Audio analysis, when supported</small></span>
           </button>
           <button data-attach="video">
             <span>🎬</span>
-            <span>Upload video
-              <small>Video analysis, when supported</small>
-            </span>
+            <span>Upload video<small>Video analysis, when supported</small></span>
           </button>
         </div>
 
@@ -981,20 +972,17 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 
           <div class="toolbar-spacer"></div>
 
-          <select class="model-select" id="modelSelect"
-            aria-label="Choose AI model">
+          <select class="model-select" id="modelSelect" aria-label="Choose AI model">
             <option value="default">Default AI</option>
             <option value="fast">Fast response</option>
             <option value="reasoning">Deep reasoning</option>
           </select>
 
-          <button class="send-button" id="sendBtn"
-            aria-label="Send message" title="Send message">↑</button>
+          <button class="send-button" id="sendBtn" aria-label="Send message" title="Send message">↑</button>
         </div>
       </div>
 
-      <input class="file-input" type="file" id="fileInput" multiple
-        accept="image/*,audio/*,video/*,.pdf,.txt,.csv,.json,.doc,.docx,.md">
+      <input class="file-input" type="file" id="fileInput" multiple accept="image/*,audio/*,video/*,.pdf,.txt,.csv,.json,.doc,.docx,.md">
 
       <div class="disclaimer">
         AI can make mistakes. Verify important information.
@@ -1004,19 +992,45 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   </main>
 </div>
 
-<div class="toast" id="toast" role="status" hidden></div>
+<div class="toast" id="toast" role="status" style="display:none"></div>
 
-  
-<script>
-(() => {
-  "use strict";
+<!-- Firebase SDK + App Logic -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { 
+    getAuth, 
+    GoogleAuthProvider, 
+    signInWithPopup, 
+    signOut, 
+    onAuthStateChanged 
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-  // ==========================================
-  // AI UNIVERSE — PART 2: APPLICATION LOGIC
-  // ==========================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyB2zhPdh2IWCEMmJbdt7EV12ZUvvBWjQ4",
+    authDomain: "ai-universe-7d50b.firebaseapp.com",
+    projectId: "ai-universe-7d50b",
+    storageBucket: "ai-universe-7d50b.firebasestorage.app",
+    messagingSenderId: "904178036677",
+    appId: "1:904178036677:web:36ed1d624b426ac2ba4aac",
+    measurementId: "G-7FGGW281"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
+
+  let currentUser = null;
+  let conversationHistory = [];
+  let savedChats = [];
+  let activeChatId = null;
+  let selectedFiles = [];
+  let isSending = false;
+  let currentTool = "chat";
+  let toastTimeout;
+  let darkMode = false;
 
   const $ = (id) => document.getElementById(id);
-
   const sidebar = $("sidebar");
   const overlay = $("sidebarOverlay");
   const chatScroll = $("chatScroll");
@@ -1030,57 +1044,85 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   const toolMenu = $("toolMenu");
   const historyList = $("historyList");
   const toast = $("toast");
-
-  let selectedFiles = [];
-  let isSending = false;
-  let currentTool = "chat";
-  let toastTimeout;
-  let conversationHistory = [];
-  let savedChats = [];
-  let activeChatId = null;
-  let darkMode = false;
+  const authBtn = $("authBtn");
+  const userName = $("userName");
+  const userAvatar = $("userAvatar");
+  const authStatus = $("authStatus");
+  const statusPill = $("statusPill");
+  const connectionLabel = $("connectionLabel");
 
   const TOOL_INFO = {
-    chat: {
-      title: "AI Chat",
-      subtitle: "Your intelligent creative workspace",
-      placeholder: "Ask anything, or describe what you want to create..."
-    },
-    image: {
-      title: "Image Studio",
-      subtitle: "Create images from your imagination",
-      placeholder: "Describe the image you want to create..."
-    },
-    video: {
-      title: "Video Studio",
-      subtitle: "Turn your ideas into video concepts",
-      placeholder: "Describe the video you want to create..."
-    },
-    audio: {
-      title: "Audio Studio",
-      subtitle: "Explore audio, speech and sound ideas",
-      placeholder: "Describe the audio you want to create..."
-    },
-    files: {
-      title: "Files & Documents",
-      subtitle: "Work with your documents and ideas",
-      placeholder: "Ask a question about your document..."
-    },
-    research: {
-      title: "Research & Web",
-      subtitle: "Explore questions and research topics",
-      placeholder: "What would you like to research?"
-    },
-    writing: {
-      title: "Writing & Coding",
-      subtitle: "Write, build, debug and improve",
-      placeholder: "What would you like to write or build?"
-    }
+    chat: { title: "AI Chat", subtitle: "Your intelligent creative workspace", placeholder: "Ask anything, or describe what you want to create..." },
+    image: { title: "Image Studio", subtitle: "Create images from your imagination", placeholder: "Describe the image you want to create..." },
+    video: { title: "Video Studio", subtitle: "Turn your ideas into video concepts", placeholder: "Describe the video you want to create..." },
+    audio: { title: "Audio Studio", subtitle: "Explore audio, speech and sound ideas", placeholder: "Describe the audio you want to create..." },
+    files: { title: "Files & Documents", subtitle: "Work with your documents and ideas", placeholder: "Ask a question about your document..." },
+    research: { title: "Research & Web", subtitle: "Explore questions and research topics", placeholder: "What would you like to research?" },
+    writing: { title: "Writing & Coding", subtitle: "Write, build, debug and improve", placeholder: "What would you like to write or build?" }
   };
 
-  // Safe text-only message rendering.
-  // This intentionally does not execute HTML returned by the AI.
-  function addMessage(role, text, options = {}) {
+  // Auth Observer
+  onAuthStateChanged(auth, (user) => {
+    currentUser = user;
+    if (user) {
+      userName.textContent = user.displayName || "User";
+      authStatus.textContent = user.email || "Signed in";
+      authBtn.textContent = "Sign out";
+      if (user.photoURL) {
+        userAvatar.innerHTML = `<img src="${user.photoURL}" alt="User Avatar" />`;
+      } else {
+        userAvatar.textContent = (user.displayName || "U")[0].toUpperCase();
+      }
+      setConnection("Ready to help", false);
+    } else {
+      userName.textContent = "AI Universe User";
+      authStatus.textContent = "Sign in required";
+      authBtn.textContent = "Sign in with Google";
+      userAvatar.textContent = "AI";
+      setConnection("Sign in required", true);
+    }
+  });
+
+  authBtn.addEventListener("click", async () => {
+    if (currentUser) {
+      await signOut(auth);
+      showToast("Signed out successfully.");
+    } else {
+      try {
+        await signInWithPopup(auth, provider);
+        showToast("Signed in successfully.");
+      } catch (err) {
+        showToast("Sign in failed: " + err.message);
+      }
+    }
+  });
+
+  function setConnection(text, isError = false) {
+    connectionLabel.textContent = text;
+    statusPill.classList.toggle("error", isError);
+  }
+
+  function showToast(message) {
+    toast.textContent = message;
+    toast.style.display = "block";
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => { toast.style.display = "none"; }, 3200);
+  }
+
+  function setBusy(busy) {
+    isSending = busy;
+    sendBtn.disabled = busy;
+    sendBtn.textContent = busy ? "…" : "↑";
+    promptInput.disabled = busy;
+    if (!busy) promptInput.focus();
+  }
+
+  function showWelcome(show) {
+    welcome.style.display = show ? "block" : "none";
+    suggestions.style.display = show ? "grid" : "none";
+  }
+
+  function addMessage(role, text) {
     const row = document.createElement("div");
     row.className = "message " + role;
 
@@ -1094,13 +1136,11 @@ button:disabled { cursor: not-allowed; opacity: .5; }
     const content = document.createElement("div");
     content.className = "message-content";
     content.textContent = String(text ?? "");
-
     row.appendChild(content);
 
-    if (role === "assistant" && !options.loading) {
+    if (role === "assistant") {
       const actions = document.createElement("div");
       actions.className = "message-actions";
-
       const copyBtn = document.createElement("button");
       copyBtn.className = "message-action";
       copyBtn.type = "button";
@@ -1110,10 +1150,9 @@ button:disabled { cursor: not-allowed; opacity: .5; }
           await navigator.clipboard.writeText(String(text ?? ""));
           showToast("Response copied.");
         } catch {
-          showToast("Copy is unavailable in this browser.");
+          showToast("Copy failed.");
         }
       });
-
       actions.appendChild(copyBtn);
       content.appendChild(actions);
     }
@@ -1124,165 +1163,80 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   }
 
   function scrollToBottom() {
-    requestAnimationFrame(() => {
-      chatScroll.scrollTop = chatScroll.scrollHeight;
-    });
+    requestAnimationFrame(() => { chatScroll.scrollTop = chatScroll.scrollHeight; });
   }
-
-  function showToast(message) {
-    toast.textContent = message;
-    toast.hidden = false;
-    clearTimeout(toastTimeout);
-    toastTimeout = setTimeout(() => {
-      toast.hidden = true;
-    }, 3200);
-  }
-
-  function setConnection(text) {
-    $("connectionLabel").textContent = text;
-  }
-
-  function setBusy(busy) {
-    isSending = busy;
-    sendBtn.disabled = busy;
-    sendBtn.textContent = busy ? "…" : "↑";
-    promptInput.disabled = busy;
-    if (!busy) promptInput.focus();
-  }
-
-  function showWelcome(show) {
-    welcome.hidden = !show;
-    suggestions.hidden = !show;
-  }
-
-  function resetComposer() {
-    promptInput.value = "";
-    promptInput.style.height = "auto";
-    selectedFiles = [];
-    renderAttachments();
-    toolMenu.hidden = true;
-  }
-
-  // ------------------------------------------
-  // CHAT HISTORY
-  // ------------------------------------------
 
   function makeChatId() {
-    return Date.now().toString(36) +
-      Math.random().toString(36).slice(2, 8);
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
   }
 
   function saveCurrentChat() {
     if (!conversationHistory.length) return;
-
     if (!activeChatId) activeChatId = makeChatId();
 
-    const firstUserMessage = conversationHistory.find(
-      item => item.role === "user"
-    );
-
-    const title = firstUserMessage
-      ? firstUserMessage.parts?.[0]?.text?.slice(0, 55) ||
-        firstUserMessage.content?.slice(0, 55) ||
-        "New conversation"
-      : "New conversation";
+    const firstMsg = conversationHistory.find(m => m.role === "user");
+    const title = firstMsg ? firstMsg.text.slice(0, 45) : "New conversation";
 
     const chat = {
       id: activeChatId,
       title,
-      messages: conversationHistory.map(item => ({ ...item })),
+      messages: conversationHistory.map(m => ({ ...m })),
       updatedAt: Date.now()
     };
 
-    const index = savedChats.findIndex(c => c.id === activeChatId);
-
-    if (index >= 0) savedChats[index] = chat;
+    const idx = savedChats.findIndex(c => c.id === activeChatId);
+    if (idx >= 0) savedChats[idx] = chat;
     else savedChats.unshift(chat);
 
     savedChats.sort((a, b) => b.updatedAt - a.updatedAt);
-    savedChats = savedChats.slice(0, 40);
     renderHistory();
   }
 
   function renderHistory() {
     historyList.replaceChildren();
-
     if (!savedChats.length) {
       const empty = document.createElement("div");
-      empty.style.cssText =
-        "padding:10px;color:#a0a2ad;font-size:11px";
+      empty.style.cssText = "padding:10px;color:#a0a2ad;font-size:11px";
       empty.textContent = "Your conversations will appear here.";
       historyList.appendChild(empty);
       return;
     }
 
     savedChats.forEach(chat => {
-      const button = document.createElement("button");
-      button.className = "history-item";
-      button.type = "button";
-      button.textContent = chat.title;
-      button.title = chat.title;
-
+      const btn = document.createElement("button");
+      btn.className = "history-item";
+      btn.type = "button";
+      btn.textContent = chat.title;
       if (chat.id === activeChatId) {
-        button.style.background = "#eeecff";
-        button.style.color = "#5548d2";
+        btn.style.background = "#eeecff";
+        btn.style.color = "#5548d2";
       }
-
-      button.addEventListener("click", () => openChat(chat.id));
-      historyList.appendChild(button);
+      btn.addEventListener("click", () => {
+        activeChatId = chat.id;
+        conversationHistory = chat.messages.map(m => ({ ...m }));
+        messages.replaceChildren();
+        showWelcome(false);
+        conversationHistory.forEach(m => addMessage(m.role, m.text));
+        renderHistory();
+        closeSidebar();
+      });
+      historyList.appendChild(btn);
     });
-  }
-
-  function openChat(id) {
-    const chat = savedChats.find(item => item.id === id);
-    if (!chat) return;
-
-    activeChatId = id;
-    conversationHistory = chat.messages.map(item => ({ ...item }));
-    messages.replaceChildren();
-    showWelcome(false);
-
-    conversationHistory.forEach(item => {
-      const role = item.role === "model" || item.role === "assistant"
-        ? "assistant"
-        : "user";
-
-      let text = item.content;
-
-      if (!text && Array.isArray(item.parts)) {
-        text = item.parts
-          .filter(part => typeof part.text === "string")
-          .map(part => part.text)
-          .join("\n");
-      }
-
-      if (text) addMessage(role, text);
-    });
-
-    renderHistory();
-    closeSidebar();
   }
 
   function newChat() {
-    if (isSending) {
-      showToast("Please wait for the current response to finish.");
-      return;
-    }
-
+    if (isSending) return;
     saveCurrentChat();
     activeChatId = null;
     conversationHistory = [];
     messages.replaceChildren();
-    resetComposer();
+    promptInput.value = "";
+    promptInput.style.height = "auto";
     showWelcome(true);
-    setConnection("Ready to help");
+    setConnection(currentUser ? "Ready to help" : "Sign in required", !currentUser);
     renderHistory();
     closeSidebar();
   }
-
-  // ------------------------------------------
-  // SIDEBAR AND NAVIGATION
-  // ------------------------------------------
 
   function closeSidebar() {
     sidebar.classList.remove("open");
@@ -1291,374 +1245,142 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 
   $("menuBtn").addEventListener("click", () => {
     sidebar.classList.toggle("open");
-    overlay.classList.toggle(
-      "show",
-      sidebar.classList.contains("open")
-    );
+    overlay.classList.toggle("show", sidebar.classList.contains("open"));
   });
 
   overlay.addEventListener("click", closeSidebar);
-
   $("newChatBtn").addEventListener("click", newChat);
-
-  document.addEventListener("keydown", event => {
-    if ((event.ctrlKey || event.metaKey) &&
-        event.key.toLowerCase() === "k") {
-      event.preventDefault();
-      newChat();
-    }
-
-    if (event.key === "Escape") {
-      toolMenu.hidden = true;
-      closeSidebar();
-    }
-  });
 
   function selectTool(tool) {
     currentTool = TOOL_INFO[tool] ? tool : "chat";
     const info = TOOL_INFO[currentTool];
-
     $("pageTitle").textContent = info.title;
     $("pageSubtitle").textContent = info.subtitle;
     promptInput.placeholder = info.placeholder;
 
-    document.querySelectorAll(".nav-item[data-tool]").forEach(button => {
-      button.classList.toggle(
-        "active",
-        button.dataset.tool === currentTool
-      );
+    document.querySelectorAll(".nav-item[data-tool]").forEach(b => {
+      b.classList.toggle("active", b.dataset.tool === currentTool);
     });
 
-    toolMenu.hidden = true;
+    toolMenu.style.display = "none";
     closeSidebar();
-
-    if (currentTool !== "chat") {
-      promptInput.focus();
-
-      const prompts = {
-        image: "Create an image: ",
-        video: "Help me create a video: ",
-        audio: "Help me create audio: ",
-        files: "Help me analyze a document: ",
-        research: "Research this topic: ",
-        writing: "Help me write or code: "
-      };
-
-      if (!promptInput.value.trim()) {
-        promptInput.value = prompts[currentTool] || "";
-      }
-    }
   }
 
-  document.querySelectorAll(".nav-item[data-tool]").forEach(button => {
-    button.addEventListener("click", () => {
-      selectTool(button.dataset.tool);
-    });
+  document.querySelectorAll(".nav-item[data-tool]").forEach(b => {
+    b.addEventListener("click", () => selectTool(b.dataset.tool));
   });
 
-  document.querySelectorAll(".suggestion[data-prompt]").forEach(button => {
-    button.addEventListener("click", () => {
-      promptInput.value = button.dataset.prompt || "";
+  document.querySelectorAll(".suggestion[data-prompt]").forEach(b => {
+    b.addEventListener("click", () => {
+      promptInput.value = b.dataset.prompt || "";
       promptInput.focus();
       promptInput.dispatchEvent(new Event("input"));
     });
   });
 
-  // ------------------------------------------
-  // ATTACHMENTS
-  // ------------------------------------------
-
   $("attachBtn").addEventListener("click", () => {
-    toolMenu.hidden = !toolMenu.hidden;
+    toolMenu.style.display = toolMenu.style.display === "none" ? "block" : "none";
   });
 
-  document.querySelectorAll("[data-attach]").forEach(button => {
-    button.addEventListener("click", () => {
-      const kind = button.dataset.attach;
-      toolMenu.hidden = true;
-
-      const accept = {
-        file: "",
-        image: "image/*",
-        audio: "audio/*",
-        video: "video/*"
-      };
-
-      fileInput.accept = accept[kind] ?? "";
+  document.querySelectorAll("[data-attach]").forEach(b => {
+    b.addEventListener("click", () => {
+      toolMenu.style.display = "none";
       fileInput.click();
     });
   });
 
   fileInput.addEventListener("change", () => {
-    const incoming = Array.from(fileInput.files || []);
-    const maxFileSize = 15 * 1024 * 1024;
-    const maxFiles = 5;
-
-    for (const file of incoming) {
-      if (selectedFiles.length >= maxFiles) {
-        showToast("You can select up to 5 files at a time.");
-        break;
-      }
-
-      if (file.size > maxFileSize) {
-        showToast(file.name + " is larger than the 15 MB preview limit.");
-        continue;
-      }
-
-      const duplicate = selectedFiles.some(
-        existing => existing.name === file.name &&
-          existing.size === file.size &&
-          existing.lastModified === file.lastModified
-      );
-
-      if (!duplicate) selectedFiles.push(file);
+    const files = Array.from(fileInput.files || []);
+    if (files.length) {
+      showToast(`${files.length} file(s) selected (text-only chat enabled).`);
     }
-
-    renderAttachments();
-    fileInput.value = "";
   });
-
-  function renderAttachments() {
-    attachmentPreview.replaceChildren();
-    attachmentPreview.hidden = selectedFiles.length === 0;
-
-    selectedFiles.forEach((file, index) => {
-      const chip = document.createElement("div");
-      chip.className = "attachment-chip";
-
-      const name = document.createElement("span");
-      const icon = file.type.startsWith("image/") ? "🖼️" :
-        file.type.startsWith("audio/") ? "🎧" :
-        file.type.startsWith("video/") ? "🎬" : "📎";
-
-      name.textContent = icon + " " + file.name;
-      chip.appendChild(name);
-
-      const remove = document.createElement("button");
-      remove.type = "button";
-      remove.textContent = "×";
-      remove.setAttribute("aria-label", "Remove " + file.name);
-
-      remove.addEventListener("click", () => {
-        selectedFiles.splice(index, 1);
-        renderAttachments();
-      });
-
-      chip.appendChild(remove);
-      attachmentPreview.appendChild(chip);
-    });
-  }
 
   $("imageBtn").addEventListener("click", () => selectTool("image"));
   $("videoBtn").addEventListener("click", () => selectTool("video"));
   $("audioBtn").addEventListener("click", () => selectTool("audio"));
 
-  // ------------------------------------------
-  // BACKEND CONNECTION
-  // ------------------------------------------
-
-  /*
-   * Expected endpoint: POST /api/chat
-   *
-   * This client sends:
-   * {
-   *   message: "...",
-   *   history: [{ role: "user"|"model", parts: [{text:"..."}] }]
-   * }
-   *
-   * Your existing Worker must accept this format, or the
-   * request body below must be adapted to match worker.js.
-   */
-
-  function extractReply(data) {
-    if (typeof data === "string") return data;
-
-    if (typeof data?.reply === "string") return data.reply;
-    if (typeof data?.response === "string") return data.response;
-    if (typeof data?.text === "string") return data.text;
-    if (typeof data?.message === "string") return data.message;
-
-    const candidate = data?.candidates?.[0];
-    if (candidate?.content?.parts) {
-      return candidate.content.parts
-        .filter(part => typeof part.text === "string")
-        .map(part => part.text)
-        .join("\n");
+  // Backend Chat Request with Firebase Bearer Token
+  async function requestAI(messagesPayload) {
+    if (!currentUser) {
+      throw new Error("Please sign in with Google first.");
     }
 
-    if (data?.result && typeof data.result === "string") {
-      return data.result;
-    }
+    const token = await currentUser.getIdToken();
 
-    return "";
-  }
-
-  function getErrorMessage(data, status) {
-    const apiMessage =
-      data?.error?.message ||
-      data?.error ||
-      data?.message;
-
-    if (status === 401 || status === 403) {
-      return "Access denied. Please check your authentication and API permissions.";
-    }
-
-    if (status === 404) {
-      return "The API endpoint or selected model was not found. Check your Worker route and configured Gemini model.";
-    }
-
-    if (status === 429) {
-      return "The AI service is busy or its usage limit has been reached. Please wait and try again.";
-    }
-
-    if (status >= 500) {
-      return "The AI server encountered a problem. Please try again shortly.";
-    }
-
-    if (apiMessage) return String(apiMessage);
-
-    return "Request failed (HTTP " + status + "). Please try again.";
-  }
-
-  async function requestAI(message, history) {
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
       },
-      credentials: "same-origin",
       body: JSON.stringify({
-        message,
-        history
+        messages: messagesPayload
       })
     });
 
-    const contentType = response.headers.get("content-type") || "";
-    let data;
-
-    if (contentType.includes("application/json")) {
-      data = await response.json();
-    } else {
-      data = await response.text();
-    }
+    const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error(getErrorMessage(data, response.status));
+      throw new Error(data.error || `Server error (${response.status})`);
     }
 
-    const reply = extractReply(data);
-
-    if (!reply) {
-      throw new Error(
-        "The server responded, but no text reply was found. Check the response format in functions/api/chat.js."
-      );
+    if (!data.reply) {
+      throw new Error("No response text received from server.");
     }
 
-    return reply;
+    return data.reply;
   }
 
   async function sendMessage() {
     if (isSending) return;
+    const text = promptInput.value.trim();
+    if (!text) return;
 
-    const userText = promptInput.value.trim();
-
-    if (!userText && !selectedFiles.length) {
-      promptInput.focus();
-      return;
+    if (!currentUser) {
+      try {
+        await signInWithPopup(auth, provider);
+        if (!auth.currentUser) return;
+      } catch (err) {
+        showToast("Please sign in to chat.");
+        return;
+      }
     }
 
-    if (selectedFiles.length) {
-      showToast(
-        "Files are selected, but this chat endpoint has not been configured to upload their contents. Remove files or add backend upload support."
-      );
-
-      if (!userText) return;
-    }
-
-    if (selectedFiles.length) {
-      showToast(
-        "Sending text only. Attachments need additional backend support."
-      );
-    }
-
-    const fullMessage = currentTool === "chat"
-      ? userText
-      : "[" + TOOL_INFO[currentTool].title + "] " + userText;
-
-    saveCurrentChat();
-
-    const priorHistory = conversationHistory.map(item => ({
-      role: item.role,
-      parts: item.parts
-    }));
+    const fullMessage = currentTool === "chat" ? text : `[${TOOL_INFO[currentTool].title}] ${text}`;
 
     showWelcome(false);
     addMessage("user", fullMessage);
+    conversationHistory.push({ role: "user", text: fullMessage });
 
-    conversationHistory.push({
-      role: "user",
-      parts: [{ text: fullMessage }]
-    });
-
-    resetComposer();
+    promptInput.value = "";
+    promptInput.style.height = "auto";
     setBusy(true);
-    setConnection("Thinking…");
+    setConnection("Thinking…", false);
 
     const loadingRow = document.createElement("div");
     loadingRow.className = "message assistant";
-
-    const loadingAvatar = document.createElement("div");
-    loadingAvatar.className = "message-avatar";
-    loadingAvatar.textContent = "✳";
-
-    const loadingContent = document.createElement("div");
-    loadingContent.className = "message-content";
-
-    const typing = document.createElement("div");
-    typing.className = "typing";
-    typing.setAttribute("aria-label", "AI is responding");
-
-    for (let i = 0; i < 3; i++) {
-      typing.appendChild(document.createElement("i"));
-    }
-
-    loadingContent.appendChild(typing);
-    loadingRow.append(loadingAvatar, loadingContent);
+    loadingRow.innerHTML = `
+      <div class="message-avatar">✳</div>
+      <div class="message-content">
+        <div class="typing"><i></i><i></i><i></i></div>
+      </div>
+    `;
     messages.appendChild(loadingRow);
     scrollToBottom();
 
     try {
-      const reply = await requestAI(fullMessage, priorHistory);
-
+      const reply = await requestAI(conversationHistory);
       loadingRow.remove();
-
       addMessage("assistant", reply);
-
-      conversationHistory.push({
-        role: "model",
-        parts: [{ text: reply }]
-      });
-
+      conversationHistory.push({ role: "assistant", text: reply });
       saveCurrentChat();
-      setConnection("Ready to help");
-    } catch (error) {
+      setConnection("Ready to help", false);
+    } catch (err) {
       loadingRow.remove();
-
-      const errorMessage = error instanceof TypeError
-        ? "Could not connect to the chat API. Check whether /api/chat is deployed on the same domain and whether your Worker is running."
-        : error.message || "An unexpected error occurred.";
-
-      addMessage(
-        "assistant",
-        "⚠️ " + errorMessage
-      );
-
-      // Remove the failed user turn so a retry does not
-      // duplicate it in the local conversation history.
+      addMessage("assistant", `⚠️ ${err.message}`);
       conversationHistory.pop();
-      saveCurrentChat();
-      setConnection("Connection issue");
-      console.error("AI Universe chat error:", error);
+      setConnection("Error", true);
     } finally {
       setBusy(false);
     }
@@ -1666,26 +1388,21 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 
   sendBtn.addEventListener("click", sendMessage);
 
-  promptInput.addEventListener("keydown", event => {
-    if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
-      event.preventDefault();
+  promptInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
       sendMessage();
     }
   });
 
   promptInput.addEventListener("input", () => {
     promptInput.style.height = "auto";
-    promptInput.style.height =
-      Math.min(promptInput.scrollHeight, 180) + "px";
+    promptInput.style.height = Math.min(promptInput.scrollHeight, 180) + "px";
   });
 
-  // ------------------------------------------
-  // THEME
-  // ------------------------------------------
-
+  // Dark/Light Theme Toggle
   $("themeBtn").addEventListener("click", () => {
     darkMode = !darkMode;
-
     if (darkMode) {
       document.documentElement.style.setProperty("--bg", "#171821");
       document.documentElement.style.setProperty("--surface", "#20212c");
@@ -1693,7 +1410,6 @@ button:disabled { cursor: not-allowed; opacity: .5; }
       document.documentElement.style.setProperty("--text", "#f2f2f7");
       document.documentElement.style.setProperty("--muted", "#a4a7b7");
       document.documentElement.style.setProperty("--border", "#343542");
-
       $("themeBtn").textContent = "☾";
     } else {
       document.documentElement.style.removeProperty("--bg");
@@ -1702,39 +1418,11 @@ button:disabled { cursor: not-allowed; opacity: .5; }
       document.documentElement.style.removeProperty("--text");
       document.documentElement.style.removeProperty("--muted");
       document.documentElement.style.removeProperty("--border");
-
       $("themeBtn").textContent = "☼";
     }
   });
 
-  // ------------------------------------------
-  // ACCOUNT AND SETTINGS
-  // ------------------------------------------
-
-  $("settingsBtn").addEventListener("click", () => {
-    showToast(
-      "Settings screen is not connected yet. Existing Firebase settings must be integrated separately."
-    );
-  });
-
-  $("accountBtn").addEventListener("click", () => {
-    showToast(
-      "Account actions depend on your existing Firebase authentication integration."
-    );
-  });
-
-  // ------------------------------------------
-  // INITIALIZE
-  // ------------------------------------------
-
   renderHistory();
-  setConnection("Ready to help");
-
-  // No automatic API request on page load.
-  // A request is made only when the user sends a message.
-
-})();
-
 </script>
 
 </body>
