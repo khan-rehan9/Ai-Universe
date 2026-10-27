@@ -579,7 +579,8 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   import { 
     getAuth, 
     GoogleAuthProvider, 
-    signInWithPopup, 
+    signInWithRedirect, 
+    getRedirectResult, 
     signOut, 
     onAuthStateChanged 
   } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
@@ -620,7 +621,12 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   const statusPill = $("statusPill");
   const connectionLabel = $("connectionLabel");
 
-  // Auth State
+  // Mobile redirect result handler
+  getRedirectResult(auth).catch((err) => {
+    console.error("Redirect error:", err);
+  });
+
+  // Auth State Listener
   onAuthStateChanged(auth, (user) => {
     currentUser = user;
     if (user) {
@@ -633,6 +639,13 @@ button:disabled { cursor: not-allowed; opacity: .5; }
         userAvatar.textContent = (user.displayName || "U")[0].toUpperCase();
       }
       setConnection("Ready to help", false);
+
+      const pendingText = sessionStorage.getItem("pending_prompt");
+      if (pendingText) {
+        sessionStorage.removeItem("pending_prompt");
+        promptInput.value = pendingText;
+        sendMessage();
+      }
     } else {
       userName.textContent = "AI Universe User";
       authStatus.textContent = "Sign in required";
@@ -642,16 +655,27 @@ button:disabled { cursor: not-allowed; opacity: .5; }
     }
   });
 
+  async function loginWithGoogle() {
+    setConnection("Connecting to Google...", false);
+    try {
+      await signInWithRedirect(auth, provider);
+    } catch (err) {
+      alert("Sign in error: " + err.message);
+      setConnection("Sign in required", true);
+    }
+  }
+
   authBtn.addEventListener("click", async () => {
     if (currentUser) {
       await signOut(auth);
     } else {
-      try {
-        await signInWithPopup(auth, provider);
-      } catch (err) {
-        alert("Sign in error: " + err.message);
-      }
+      await loginWithGoogle();
     }
+  });
+
+  statusPill.style.cursor = "pointer";
+  statusPill.addEventListener("click", () => {
+    if (!currentUser) loginWithGoogle();
   });
 
   function setConnection(text, isError = false) {
@@ -695,13 +719,9 @@ button:disabled { cursor: not-allowed; opacity: .5; }
     if (!text) return;
 
     if (!currentUser) {
-      try {
-        await signInWithPopup(auth, provider);
-        if (!auth.currentUser) return;
-      } catch (err) {
-        alert("Please sign in with Google to use the chat.");
-        return;
-      }
+      sessionStorage.setItem("pending_prompt", text);
+      await loginWithGoogle();
+      return;
     }
 
     addMessage("user", text);
@@ -775,7 +795,6 @@ button:disabled { cursor: not-allowed; opacity: .5; }
     promptInput.style.height = Math.min(promptInput.scrollHeight, 160) + "px";
   });
 
-  // Mobile drawer controls
   $("menuBtn").addEventListener("click", () => {
     sidebar.classList.toggle("open");
     overlay.classList.toggle("show", sidebar.classList.contains("open"));
@@ -795,7 +814,6 @@ button:disabled { cursor: not-allowed; opacity: .5; }
     overlay.classList.remove("show");
   });
 
-  // Theme toggle
   $("themeBtn").addEventListener("click", () => {
     darkMode = !darkMode;
     if (darkMode) {
