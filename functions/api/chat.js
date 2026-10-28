@@ -9,8 +9,8 @@ export async function onRequestPost({ request, env }) {
       });
     }
 
-    // Google Gemini API call (Direct & Fast, No Firebase Auth barrier)
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${env.GEMINI_API_KEY}`;
+    // Official latest Gemini 3.8 Flash endpoint
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${env.GEMINI_API_KEY}`;
 
     const contents = messages.map(m => ({
       role: m.role === "assistant" ? "model" : "user",
