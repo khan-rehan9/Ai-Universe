@@ -574,34 +574,7 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   </main>
 </div>
   <!-- Firebase SDK + Complete App Logic -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { 
-    getAuth, 
-    GoogleAuthProvider, 
-    signInWithRedirect, 
-    getRedirectResult, 
-    signOut, 
-    onAuthStateChanged 
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-
-  // Verified Official Firebase Configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyBz2h4pdzHIWcEMMJbd1EVr7zUVviWJ8q4",
-    authDomain: "ai-universe-7d50b.firebaseapp.com",
-    projectId: "ai-universe-7d50b",
-    storageBucket: "ai-universe-7d50b.firebasestorage.app",
-    messagingSenderId: "904718036677",
-    appId: "1:904718036677:web:316d06e91a264de02b4aac",
-    measurementId: "G-7CFGGW2R81"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
-  provider.setCustomParameters({ prompt: "select_account" });
-
-  let currentUser = null;
+<script>
   let conversationHistory = [];
   let isSending = false;
   let darkMode = false;
@@ -615,74 +588,12 @@ button:disabled { cursor: not-allowed; opacity: .5; }
   const messages = $("messages");
   const promptInput = $("promptInput");
   const sendBtn = $("sendBtn");
-  const authBtn = $("authBtn");
-  const userName = $("userName");
-  const userAvatar = $("userAvatar");
-  const authStatus = $("authStatus");
   const statusPill = $("statusPill");
   const connectionLabel = $("connectionLabel");
 
-  // Mobile redirect result handler
-  getRedirectResult(auth).catch((err) => {
-    console.error("Redirect error:", err);
-  });
-
-  // Auth State Listener
-  onAuthStateChanged(auth, (user) => {
-    currentUser = user;
-    if (user) {
-      userName.textContent = user.displayName || "User";
-      authStatus.textContent = user.email || "Signed in";
-      authBtn.textContent = "Sign out";
-      if (user.photoURL) {
-        userAvatar.innerHTML = `<img src="${user.photoURL}" alt="Avatar">`;
-      } else {
-        userAvatar.textContent = (user.displayName || "U")[0].toUpperCase();
-      }
-      setConnection("Ready to help", false);
-
-      const pendingText = sessionStorage.getItem("pending_prompt");
-      if (pendingText) {
-        sessionStorage.removeItem("pending_prompt");
-        promptInput.value = pendingText;
-        sendMessage();
-      }
-    } else {
-      userName.textContent = "AI Universe User";
-      authStatus.textContent = "Sign in required";
-      authBtn.textContent = "Sign in with Google";
-      userAvatar.textContent = "AI";
-      setConnection("Sign in required", true);
-    }
-  });
-
-  async function loginWithGoogle() {
-    setConnection("Connecting to Google...", false);
-    try {
-      await signInWithRedirect(auth, provider);
-    } catch (err) {
-      alert("Sign in error: " + err.message);
-      setConnection("Sign in required", true);
-    }
-  }
-
-  authBtn.addEventListener("click", async () => {
-    if (currentUser) {
-      await signOut(auth);
-    } else {
-      await loginWithGoogle();
-    }
-  });
-
-  statusPill.style.cursor = "pointer";
-  statusPill.addEventListener("click", () => {
-    if (!currentUser) loginWithGoogle();
-  });
-
-  function setConnection(text, isError = false) {
-    connectionLabel.textContent = text;
-    statusPill.classList.toggle("error", isError);
-  }
+  connectionLabel.textContent = "Ready to help";
+  $("authStatus").textContent = "Direct Workspace";
+  $("authBtn").style.display = "none";
 
   function addMessage(role, text) {
     welcome.style.display = "none";
@@ -719,12 +630,6 @@ button:disabled { cursor: not-allowed; opacity: .5; }
     const text = promptInput.value.trim();
     if (!text) return;
 
-    if (!currentUser) {
-      sessionStorage.setItem("pending_prompt", text);
-      await loginWithGoogle();
-      return;
-    }
-
     addMessage("user", text);
     conversationHistory.push({ role: "user", text });
 
@@ -732,7 +637,7 @@ button:disabled { cursor: not-allowed; opacity: .5; }
     promptInput.style.height = "auto";
     isSending = true;
     sendBtn.disabled = true;
-    setConnection("Thinking…", false);
+    connectionLabel.textContent = "Thinking…";
 
     const loadingRow = document.createElement("div");
     loadingRow.className = "message assistant";
@@ -746,21 +651,13 @@ button:disabled { cursor: not-allowed; opacity: .5; }
     chatScroll.scrollTop = chatScroll.scrollHeight;
 
     try {
-      const token = await currentUser.getIdToken();
-
       const response = await fetch("/api/chat", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          messages: conversationHistory
-        })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: conversationHistory })
       });
 
       const data = await response.json().catch(() => ({}));
-
       loadingRow.remove();
 
       if (!response.ok) {
@@ -770,12 +667,12 @@ button:disabled { cursor: not-allowed; opacity: .5; }
       const reply = data.reply || "No response received.";
       addMessage("assistant", reply);
       conversationHistory.push({ role: "assistant", text: reply });
-      setConnection("Ready to help", false);
+      connectionLabel.textContent = "Ready to help";
     } catch (err) {
       loadingRow.remove();
       addMessage("assistant", `⚠️ ${err.message}`);
       conversationHistory.pop();
-      setConnection("Error", true);
+      connectionLabel.textContent = "Error";
     } finally {
       isSending = false;
       sendBtn.disabled = false;
